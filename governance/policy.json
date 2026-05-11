@@ -1,0 +1,4 @@
+{
+  "minimum_roc_auc": 0.8,
+  "maximum_calibration_gap": 0.1
+}

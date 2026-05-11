@@ -1,0 +1,38 @@
+{
+  "dataset_name": "statlog_german_credit",
+  "source_file": "german.data",
+  "expected_rows": 1000,
+  "expected_columns": 21,
+  "target_column": "credit_risk",
+  "target_encoding": {
+    "1": "good",
+    "2": "bad"
+  },
+  "cost_matrix": {
+    "actual_good": {"predicted_good": 0, "predicted_bad": 1},
+    "actual_bad": {"predicted_good": 5, "predicted_bad": 0}
+  },
+  "fields": [
+    {"name": "checking_account_status", "type": "categorical", "allowed_values": ["A11", "A12", "A13", "A14"]},
+    {"name": "duration_months", "type": "integer"},
+    {"name": "credit_history", "type": "categorical", "allowed_values": ["A30", "A31", "A32", "A33", "A34"]},
+    {"name": "purpose", "type": "categorical", "allowed_values": ["A40", "A41", "A42", "A43", "A44", "A45", "A46", "A47", "A48", "A49", "A410"]},
+    {"name": "credit_amount", "type": "integer"},
+    {"name": "savings_account", "type": "categorical", "allowed_values": ["A61", "A62", "A63", "A64", "A65"]},
+    {"name": "employment_status", "type": "categorical", "allowed_values": ["A71", "A72", "A73", "A74", "A75"]},
+    {"name": "installment_rate", "type": "integer"},
+    {"name": "personal_status_sex", "type": "categorical", "allowed_values": ["A91", "A92", "A93", "A94", "A95"]},
+    {"name": "other_debtors", "type": "categorical", "allowed_values": ["A101", "A102", "A103"]},
+    {"name": "residence_since", "type": "integer"},
+    {"name": "property", "type": "categorical", "allowed_values": ["A121", "A122", "A123", "A124"]},
+    {"name": "age", "type": "integer"},
+    {"name": "other_installment_plans", "type": "categorical", "allowed_values": ["A141", "A142", "A143"]},
+    {"name": "housing", "type": "categorical", "allowed_values": ["A151", "A152", "A153"]},
+    {"name": "existing_credits", "type": "integer"},
+    {"name": "job", "type": "categorical", "allowed_values": ["A171", "A172", "A173", "A174"]},
+    {"name": "num_liable", "type": "integer"},
+    {"name": "telephone", "type": "categorical", "allowed_values": ["A191", "A192"]},
+    {"name": "foreign_worker", "type": "categorical", "allowed_values": ["A201", "A202"]},
+    {"name": "credit_risk", "type": "target", "allowed_values": [1, 2]}
+  ]
+}
