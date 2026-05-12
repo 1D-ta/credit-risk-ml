@@ -39,7 +39,8 @@ def main() -> None:
     args.candidate_dir.mkdir(parents=True, exist_ok=True)
     args.approved_dir.mkdir(parents=True, exist_ok=True)
     candidate_path = args.candidate_dir / args.model_artifact.name
-    shutil.copy2(args.model_artifact, candidate_path)
+    if args.model_artifact.resolve() != candidate_path.resolve():
+        shutil.copy2(args.model_artifact, candidate_path)
     approved_path = args.approved_dir / args.model_artifact.name
 
     registry = []

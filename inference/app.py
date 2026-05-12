@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -11,6 +12,10 @@ import uuid
 import logging
 
 from prometheus_client import Counter, Histogram, start_http_server
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from credit_risk_ml.data_contract import load_schema
 from credit_risk_ml.modeling import load_artifact, predict_bad_probability_from_model

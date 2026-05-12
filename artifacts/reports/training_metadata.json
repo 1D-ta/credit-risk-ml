@@ -3,10 +3,10 @@
   "data_hash": "a91bbb960312ed86ca976a459117e1c86050d5c3a8763251e47da7f4c6cf3676",
   "decision_threshold": 0.3,
   "metrics": {
-    "approval_rate": 0.10572139303482588,
-    "roc_auc": 0.8006856060895258
+    "approval_rate": 0.06666666666666667,
+    "roc_auc": 0.7977038593613859
   },
-  "model_output": "artifacts/models/model_v1.pkl",
+  "model_output": "artifacts/models/candidate/model.pkl",
   "model_version": "v1",
   "rows": 1000,
   "split_indices": "artifacts/reports/split_indices.json"

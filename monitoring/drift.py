@@ -49,6 +49,62 @@ def population_stability_index(reference: pd.Series, current: pd.Series, bins: i
     return float(psi_values.sum())
 
 
+def compute_psi_over_time(
+    reference_frame: pd.DataFrame,
+    current_frame: pd.DataFrame,
+    schema: DatasetSchema,
+    time_column: str = "event_time",
+    psi_threshold: float = 0.2,
+) -> list[tuple[str, float]]:
+    """
+    Compute PSI per time batch (date window) against reference data.
+    
+    Args:
+        reference_frame: Reference dataset
+        current_frame: Current dataset with event_time column
+        schema: Dataset schema
+        time_column: Name of the time column (default: "event_time")
+    
+    Returns:
+        List of (date, psi) tuples
+    """
+    if time_column not in current_frame.columns:
+        return []
+    
+    current = current_frame.copy()
+    current[time_column] = pd.to_datetime(current[time_column], errors="coerce").dt.date
+    current = current.dropna(subset=[time_column])
+    if current.empty:
+        return []
+    
+    features = [field for field in schema.fields if field.name not in {schema.target_column, time_column}]
+    results: list[tuple[str, float]] = []
+    
+    for day in sorted(current[time_column].unique()):
+        day_frame = current[current[time_column] == day]
+        if day_frame.empty:
+            continue
+        
+        # Compute PSI for each feature and take the max
+        day_psi_values: list[float] = []
+        for field in features:
+            psi = population_stability_index(reference_frame[field.name], day_frame[field.name])
+            day_psi_values.append(psi)
+        
+        max_psi = max(day_psi_values) if day_psi_values else 0.0
+        results.append((str(day), max_psi))
+        
+        # Log each batch
+        print(f"DATE={day} PSI={max_psi:.4f}")
+
+        # Check for drift and trigger alert if threshold breached
+        if max_psi > psi_threshold:
+            from monitoring.alert import trigger_alert
+            trigger_alert("PSI", max_psi, psi_threshold)
+    
+    return results
+
+
 def kolmogorov_smirnov_statistic(reference: pd.Series, current: pd.Series) -> float:
     reference = pd.to_numeric(reference.dropna(), errors="coerce").dropna().to_numpy()
     current = pd.to_numeric(current.dropna(), errors="coerce").dropna().to_numpy()
@@ -77,10 +133,12 @@ def build_drift_report(reference_frame: pd.DataFrame, current_frame: pd.DataFram
         if psi_value > 0.2 or (ks_value is not None and ks_value > 0.1):
             alert = True
 
-    return {
+    report: dict[str, object] = {
         "alert": alert,
         "feature_reports": feature_reports,
     }
+    
+    return report
 
 
 def build_temporal_psi_trend(
@@ -108,7 +166,7 @@ def build_temporal_psi_trend(
         day_feature_psi: dict[str, float] = {}
         for field in features:
             day_feature_psi[field.name] = population_stability_index(reference_frame[field.name], day_frame[field.name])
-        max_feature = max(day_feature_psi, key=day_feature_psi.get)
+        max_feature = max(day_feature_psi.items(), key=lambda item: item[1])[0]
         trend.append(
             {
                 "event_time": str(day),
@@ -173,6 +231,15 @@ def main() -> None:
         prediction_psi = population_stability_index(ref_preds, cur_preds)
         report["prediction_psi"] = prediction_psi
 
+    temporal_psi_batches = compute_psi_over_time(
+        reference_frame,
+        current_frame,
+        schema,
+        args.time_column,
+        args.psi_threshold,
+    )
+    report["temporal_psi_batches"] = [{"date": date, "psi": psi} for date, psi in temporal_psi_batches]
+
     trend = build_temporal_psi_trend(reference_frame, current_frame, schema, args.time_column)
     report["temporal_psi_trend"] = trend
 
@@ -180,8 +247,11 @@ def main() -> None:
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True))
 
     # Export a single PSI value for Prometheus/Grafana panels.
+    feature_reports = report["feature_reports"]
+    if not isinstance(feature_reports, dict):
+        raise TypeError("feature_reports must be a dictionary")
     psi_for_metrics = float(prediction_psi) if prediction_psi is not None else float(
-        max((item["psi"] for item in report["feature_reports"].values()), default=0.0)
+        max((item["psi"] for item in feature_reports.values()), default=0.0)
     )
     set_psi(psi_for_metrics)
 

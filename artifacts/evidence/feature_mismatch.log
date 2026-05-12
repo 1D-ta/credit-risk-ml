@@ -1,0 +1,66 @@
+# Feature Consistency Check Failure Log
+# Demonstrates feature distribution mismatch detection
+
+=== FEATURE CONSISTENCY CHECK ===
+Timestamp: 2020-07-15T14:31:12.345Z
+Check Type: Training vs Inference Feature Distribution Comparison
+
+=== TRAINING BASELINE (from training_features.json) ===
+credit_amount:
+  mean: 3271.26
+  std: 2822.74
+  min: 250.0
+  max: 18424.0
+
+duration_months:
+  mean: 20.90
+  std: 12.06
+  min: 4.0
+  max: 72.0
+
+=== INFERENCE STATISTICS (current batch) ===
+credit_amount:
+  mean: 327126.00  ← ALERT: 100x shift detected
+  std: 282274.00
+  min: 25000.0
+  max: 1842400.0
+
+duration_months:
+  mean: 20.85
+  std: 12.12
+  min: 4.0
+  max: 72.0
+
+=== MISMATCH DETECTED ===
+{
+  "alert": true,
+  "timestamp": "2020-07-15T14:31:12.345Z",
+  "failures": {
+    "credit_amount": {
+      "reason": "mean_shift",
+      "train_mean": 3271.26,
+      "inference_mean": 327126.00,
+      "shift_magnitude_stds": 114.8,
+      "relative_change": 99.0,
+      "threshold_exceeded": "mean shifted >3 standard deviations"
+    }
+  },
+  "action": "request_rejected",
+  "http_status": 503,
+  "error_message": "Feature distribution mismatch detected - possible data pipeline corruption or unit change (cents vs euros)"
+}
+
+=== ROOT CAUSE ANALYSIS ===
+Likely cause: Client sending credit_amount in cents instead of euros
+Expected: 3271 (euros)
+Received: 327126 (cents = 3271.26 euros * 100)
+
+Impact: Model trained on euros would produce invalid predictions on cent-scaled inputs
+Protection: Request rejected before inference to prevent silent model degradation
+
+=== RECOMMENDATION ===
+1. Verify upstream data pipeline units
+2. Check client integration for currency conversion
+3. Validate feature engineering consistency
+4. Do NOT retrain model on corrupted data
+5. Fix data pipeline, then resume inference

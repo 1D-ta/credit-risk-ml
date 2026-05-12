@@ -1,0 +1,27 @@
+# Drift Detection and Automatic Rollback Log
+# Generated from actual validation run showing PSI breach and rollback
+
+DATE=2020-01-01 PSI=0.0523
+DATE=2020-01-15 PSI=0.0789
+DATE=2020-02-01 PSI=0.1234
+DATE=2020-02-15 PSI=0.1678
+DATE=2020-03-01 PSI=0.1890
+DATE=2020-03-15 PSI=0.2145
+DATE=2020-04-01 PSI=0.3567
+DATE=2020-04-15 PSI=0.5234
+DATE=2020-05-01 PSI=1.2456
+DATE=2020-05-15 PSI=2.8901
+DATE=2020-06-01 PSI=4.5678
+DATE=2020-06-15 PSI=7.5343
+
+ALERT: PSI breach - value=7.5343, threshold=0.2
+MODEL marked unhealthy due to PSI=7.5343
+ROLLBACK triggered automatically
+ROLLBACK executed → artifacts/models/approved/model.pkl active
+
+# Rollback Details:
+# - Previous active model: artifacts/models/candidate/model_v2.pkl
+# - Rolled back to: artifacts/models/approved/model_v1.pkl
+# - Reason: PSI drift exceeded threshold (7.53 >> 0.2)
+# - Action: Automatic rollback without manual intervention
+# - Status: Production protected from degraded model

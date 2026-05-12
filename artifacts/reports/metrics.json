@@ -1,5 +1,5 @@
 {
-  "approval_rate": 0.13089005235602094,
+  "approval_rate": 0.08673469387755102,
   "decision_threshold": 0.3,
-  "roc_auc": 0.8164108618654073
+  "roc_auc": 0.8195790177079854
 }

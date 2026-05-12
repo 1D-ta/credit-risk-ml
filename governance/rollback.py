@@ -27,6 +27,17 @@ def rollback_to_latest_approved(registry_path: Path, active_pointer_path: Path) 
     return {"status": "rolled_back", "active_model": latest_approved["artifact"]}
 
 
+def trigger_rollback():
+    """Trigger automatic rollback to last approved model."""
+    print("ROLLBACK triggered automatically")
+    result = rollback_to_latest_approved(
+        Path("artifacts/reports/model_registry.json"),
+        Path("artifacts/models/active_model.json"),
+    )
+    print(f"ROLLBACK executed → {result['active_model']} active")
+    return result
+
+
 def main() -> None:
     args = parse_args()
     result = rollback_to_latest_approved(args.registry, args.active_pointer)

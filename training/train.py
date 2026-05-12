@@ -32,7 +32,7 @@ def main() -> None:
     report = dataset_summary(rows, schema, args.raw_data)
     frame = rows_to_frame(rows, schema)
 
-    # Temporal split: train on t < T, validate on T, test on t > T
+    # Temporal split: train on t < T1, validate on T1 <= t < T2, test on t >= T2
     import pandas as _pd
 
     if "event_time" not in frame.columns:
@@ -47,43 +47,59 @@ def main() -> None:
     if len(unique_dates) < 3:
         raise RuntimeError("Not enough distinct dates for temporal split")
 
-    # choose T as the 80th percentile date so train < T, validate = T, test > T
-    split_pos = int(len(unique_dates) * 0.8)
-    split_pos = max(1, min(split_pos, len(unique_dates) - 2))
-    T = unique_dates[split_pos]
+    # choose T1 as ~60th percentile and T2 as ~80th percentile
+    # train: t < T1, val: T1 <= t < T2, test: t >= T2
+    t1_pos = int(len(unique_dates) * 0.6)
+    t2_pos = int(len(unique_dates) * 0.8)
+    t1_pos = max(1, min(t1_pos, len(unique_dates) - 2))
+    t2_pos = max(t1_pos + 1, min(t2_pos, len(unique_dates) - 1))
+    T1 = unique_dates[t1_pos]
+    T2 = unique_dates[t2_pos]
 
-    train_idx = frame.index[frame["event_time"] < T].tolist()
-    calibration_idx = frame.index[frame["event_time"] == T].tolist()
-    test_idx = frame.index[frame["event_time"] > T].tolist()
+    train_idx = frame.index[frame["event_time"] < T1].tolist()
+    calibration_idx = frame.index[(frame["event_time"] >= T1) & (frame["event_time"] < T2)].tolist()
+    test_idx = frame.index[frame["event_time"] >= T2].tolist()
 
     if not train_idx or not calibration_idx or not test_idx:
         raise RuntimeError("Temporal split produced an empty train/val/test partition")
 
-    train_max = frame.loc[train_idx, "event_time"].max()
-    val_min = frame.loc[calibration_idx, "event_time"].min()
-    test_min = frame.loc[test_idx, "event_time"].min()
-    if not (train_max < val_min and val_min < test_min):
+    train_dates = frame.loc[train_idx, "event_time"]
+    val_dates = frame.loc[calibration_idx, "event_time"]
+    test_dates = frame.loc[test_idx, "event_time"]
+    
+    train_max = train_dates.max()
+    val_min = val_dates.min()
+    val_max = val_dates.max()
+    test_min = test_dates.min()
+    
+    if not (train_max < val_min and val_max < test_min):
         raise RuntimeError("Temporal leakage detected: split ordering is invalid")
+
+    # Explicit logging after split creation
+    print(f"TRAIN_RANGE: {train_dates.min()} to {train_dates.max()}")
+    print(f"VAL_RANGE: {val_dates.min()} to {val_dates.max()}")
+    print(f"TEST_RANGE: {test_dates.min()} to {test_dates.max()}")
 
     split_indices = {
         "train_idx": train_idx,
         "calibration_idx": calibration_idx,
         "test_idx": test_idx,
-        "temporal_split_date_T": str(T),
+        "temporal_split_T1": str(T1),
+        "temporal_split_T2": str(T2),
         "event_time_ranges": {
             "train": {
-                "start": str(frame.loc[train_idx, "event_time"].min()),
+                "start": str(train_dates.min()),
                 "end": str(train_max),
                 "rows": len(train_idx),
             },
             "validation": {
                 "start": str(val_min),
-                "end": str(frame.loc[calibration_idx, "event_time"].max()),
+                "end": str(val_max),
                 "rows": len(calibration_idx),
             },
             "test": {
                 "start": str(test_min),
-                "end": str(frame.loc[test_idx, "event_time"].max()),
+                "end": str(test_dates.max()),
                 "rows": len(test_idx),
             },
         },
@@ -100,9 +116,9 @@ def main() -> None:
 
     args.split_log_output.parent.mkdir(parents=True, exist_ok=True)
     log_lines = [
-        f"TEMPORAL_SPLIT: train t < T range={split_indices['event_time_ranges']['train']['start']}..{split_indices['event_time_ranges']['train']['end']} rows={split_indices['event_time_ranges']['train']['rows']}",
-        f"TEMPORAL_SPLIT: val t = T date={T} rows={split_indices['event_time_ranges']['validation']['rows']}",
-        f"TEMPORAL_SPLIT: test t > T range={split_indices['event_time_ranges']['test']['start']}..{split_indices['event_time_ranges']['test']['end']} rows={split_indices['event_time_ranges']['test']['rows']}",
+        f"TEMPORAL_SPLIT: train t < T1 range={split_indices['event_time_ranges']['train']['start']}..{split_indices['event_time_ranges']['train']['end']} rows={split_indices['event_time_ranges']['train']['rows']}",
+        f"TEMPORAL_SPLIT: val T1 <= t < T2 range={split_indices['event_time_ranges']['validation']['start']}..{split_indices['event_time_ranges']['validation']['end']} rows={split_indices['event_time_ranges']['validation']['rows']}",
+        f"TEMPORAL_SPLIT: test t >= T2 range={split_indices['event_time_ranges']['test']['start']}..{split_indices['event_time_ranges']['test']['end']} rows={split_indices['event_time_ranges']['test']['rows']}",
         "TEMPORAL_SPLIT: NO_LEAKAGE_CHECK=passed",
     ]
     args.split_log_output.write_text("\n".join(log_lines) + "\n")

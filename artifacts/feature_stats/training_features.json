@@ -1,11 +1,11 @@
 {
   "age": {
-    "max": 75.0,
-    "mean": 35.52114427860697,
+    "max": 74.0,
+    "mean": 35.90569105691057,
     "min": 19.0,
     "missing_pct": 0.0,
     "name": "age",
-    "std": 11.197348942786865
+    "std": 11.629915519290412
   },
   "checking_account_status": {
     "max": "A14",
@@ -17,11 +17,11 @@
   },
   "credit_amount": {
     "max": 15945.0,
-    "mean": 3276.8171641791046,
-    "min": 276.0,
+    "mean": 3257.878048780488,
+    "min": 343.0,
     "missing_pct": 0.0,
     "name": "credit_amount",
-    "std": 2741.8346813456055
+    "std": 2742.6671794241915
   },
   "credit_history": {
     "max": "A34",
@@ -33,11 +33,11 @@
   },
   "duration_months": {
     "max": 72.0,
-    "mean": 21.128109452736318,
+    "mean": 21.095934959349595,
     "min": 4.0,
     "missing_pct": 0.0,
     "name": "duration_months",
-    "std": 12.12419155366032
+    "std": 11.990994166592472
   },
   "employment_status": {
     "max": "A75",
@@ -49,11 +49,11 @@
   },
   "existing_credits": {
     "max": 4.0,
-    "mean": 1.4154228855721394,
+    "mean": 1.4146341463414633,
     "min": 1.0,
     "missing_pct": 0.0,
     "name": "existing_credits",
-    "std": 0.589709129198165
+    "std": 0.603016700579184
   },
   "foreign_worker": {
     "max": "A202",
@@ -73,11 +73,11 @@
   },
   "installment_rate": {
     "max": 4.0,
-    "mean": 3.0012437810945274,
+    "mean": 2.9804878048780488,
     "min": 1.0,
     "missing_pct": 0.0,
     "name": "installment_rate",
-    "std": 1.0996426206610166
+    "std": 1.1123864753104662
   },
   "job": {
     "max": "A174",
@@ -89,11 +89,11 @@
   },
   "num_liable": {
     "max": 2.0,
-    "mean": 1.1492537313432836,
+    "mean": 1.146341463414634,
     "min": 1.0,
     "missing_pct": 0.0,
     "name": "num_liable",
-    "std": 0.3565602100079369
+    "std": 0.35373592050268376
   },
   "other_debtors": {
     "max": "A103",
@@ -137,11 +137,11 @@
   },
   "residence_since": {
     "max": 4.0,
-    "mean": 2.8694029850746268,
+    "mean": 2.856910569105691,
     "min": 1.0,
     "missing_pct": 0.0,
     "name": "residence_since",
-    "std": 1.0792318387097033
+    "std": 1.0973822346211248
   },
   "savings_account": {
     "max": "A65",

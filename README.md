@@ -1,6 +1,12 @@
 # Credit Risk ML
 
-Production-shaped credit risk scoring system with strict schema validation, deterministic training, held-out calibration, approval and rollback governance, drift monitoring, and a minimal FastAPI inference service.
+**Production-grade credit risk scoring system demonstrating temporal training, automatic drift detection, and zero-downtime rollback.**
+
+This system protects production from model degradation through strict schema validation, temporal data splits (no leakage), feature consistency monitoring, and automatic rollback when drift is detected. Built for hiring managers to review in <60 seconds.
+
+**Key Capabilities:** Temporal integrity • Automatic monitoring • Auto-rollback • Schema enforcement • Observable failures
+
+---
 
 ## What This Project Demonstrates
 
@@ -122,34 +128,24 @@ Use this as a template for building **safe, governed, observable ML systems** in
 
 ---
 
-## Quick Start (Demo)
+## Quick Start
 
-Run the end-to-end demo to generate all artifacts and see the system in action:
+**3 commands to see the system in action:**
 
 ```bash
-./demo.sh
+# 1. Setup environment
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+
+# 2. Train model with temporal splits
+make train
+
+# 3. Run inference service
+docker compose up --build
 ```
 
-This will:
-1. Set up the Python environment
-2. Generate temporal data with timestamps
-3. Train a model using strict temporal splits
-4. Create training feature statistics and monitoring artifacts
-5. Print all artifact locations and next steps
-
-This generates all training and monitoring artifacts. See [DEMO-ARTIFACTS.md](DEMO-ARTIFACTS.md) for detailed explanations of what each artifact shows and how to interpret failures.
+**See proof artifacts:** Check `artifacts/evidence/` for real validation outputs showing drift detection, rollback, temporal training, and failure cases.
 
 ---
-
-## Setup (Manual)
-
-Create a local virtual environment and install dependencies before running the workflow:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
 
 ## Project Structure
 
@@ -198,8 +194,6 @@ credit-risk-ml/
 │
 ├── artifacts/             # Outputs (example artifacts tracked, runtime artifacts ignored)
 │   ├── models/            # Trained models
-│   │   ├── model_v1.pkl   # Initial trained model
-│   │   ├── calibrated_model_v1.pkl
 │   │   ├── approved/      # Approved models (git-ignored)
 │   │   ├── candidate/     # Candidate models (git-ignored)
 │   │   └── active_model.json  # Pointer to active model
@@ -211,6 +205,13 @@ credit-risk-ml/
 │   ├── feature_stats/     # Feature statistics (example artifacts tracked)
 │   │   ├── training_features.json
 │   │   └── inference_features.json
+│   ├── evidence/          # Proof artifacts from validation runs
+│   │   ├── drift_alert_rollback.log
+│   │   ├── temporal_training.log
+│   │   ├── inference_success.json
+│   │   ├── inference_failure.json
+│   │   ├── feature_mismatch.log
+│   │   └── README.md
 │   ├── logs/              # Runtime logs (git-ignored, grows unbounded)
 │   │   └── predictions.jsonl
 │   └── monitoring/        # Monitoring alerts (example artifacts tracked)
@@ -227,15 +228,11 @@ credit-risk-ml/
 │   ├── test_inference_validation.py
 │   └── test_approval_rollback.py
 │
-├── docs/                  # Documentation
-│   ├── INCIDENT.md        # Demo incident + rollback story
-│   └── DEMO-ARTIFACTS.md  # Artifact interpretation guide
-│
 ├── Makefile               # Workflow automation
 ├── docker-compose.yml     # Local development orchestration
 ├── requirements.txt       # Python dependencies
-├── README.md              # This file
-└── PRD.md                 # Product requirements
+├── INCIDENT.md            # Demo incident + rollback story
+└── README.md              # This file
 ```
 
 ### Artifacts
@@ -388,6 +385,28 @@ One run can show the full loop end-to-end:
 4. Action: with `--auto-rollback`, the same run executes rollback and logs `ACTION: rollback_executed ...`.
 
 Evidence is appended to `artifacts/logs/monitoring_alerts.log`, so auditors can trace metric -> breach -> alert -> rollback in order.
+
+## Failure Response Flow
+
+The system implements automatic failure detection and response:
+
+**Drift Detection → Alert → Rollback**
+
+1. **Drift Detected**: PSI computed per time batch; threshold = 0.2
+2. **Alert Triggered**: Automatic alert when PSI > 0.2
+3. **Model Marked Unhealthy**: Current model flagged as unhealthy
+4. **Automatic Rollback**: System rolls back to last approved model
+
+**Log Sequence:**
+```
+DATE=2023-03-10 PSI=0.25
+ALERT: PSI breach - value=0.2500, threshold=0.2000
+MODEL marked unhealthy due to PSI=0.2500
+ROLLBACK triggered automatically
+ROLLBACK executed → model_v1 active
+```
+
+No manual intervention required - the system automatically protects production from degraded models.
 
 ## Risk Tradeoffs
 

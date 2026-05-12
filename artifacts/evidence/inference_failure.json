@@ -1,0 +1,42 @@
+{
+  "request_id": "req_20200715_143045_x9k2m1",
+  "timestamp": "2020-07-15T14:30:45.789Z",
+  "error": "schema_validation_failed",
+  "status": "rejected",
+  "http_status": 422,
+  "details": {
+    "error_type": "ValidationError",
+    "message": "Request validation failed: missing required field",
+    "validation_errors": [
+      {
+        "field": "credit_amount",
+        "error": "field required",
+        "location": "body"
+      }
+    ]
+  },
+  "input_received": {
+    "checking_status": "A11",
+    "duration_months": 12,
+    "credit_history": "A34",
+    "purpose": "A43",
+    "savings": "A61",
+    "employment_duration": "A73",
+    "installment_rate": 3,
+    "personal_status_sex": "A93",
+    "other_debtors": "A101",
+    "residence_since": 2,
+    "property": "A121",
+    "age": 35,
+    "other_installment_plans": "A143",
+    "housing": "A152",
+    "num_existing_credits": 1,
+    "job": "A173",
+    "num_people_liable": 1,
+    "telephone": "A192",
+    "foreign_worker": "A201"
+  },
+  "reason": "Missing required field 'credit_amount' - schema validation enforces all 20 features must be present",
+  "action_taken": "Request rejected before model inference",
+  "recommendation": "Verify all 20 required features are included in request payload"
+}
