@@ -13,7 +13,7 @@
     "actual_bad": {"predicted_good": 5, "predicted_bad": 0}
   },
   "fields": [
-    {"name": "timestamp", "type": "timestamp"},
+    {"name": "event_time", "type": "timestamp"},
     {"name": "checking_account_status", "type": "categorical", "allowed_values": ["A11", "A12", "A13", "A14"]},
     {"name": "duration_months", "type": "integer"},
     {"name": "credit_history", "type": "categorical", "allowed_values": ["A30", "A31", "A32", "A33", "A34"]},

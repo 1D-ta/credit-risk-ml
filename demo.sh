@@ -35,7 +35,68 @@ python training/train.py \
 echo "✓ Model trained"
 echo ""
 
-# Step 4: Show key artifacts
+# Step 4: Evaluate, calibrate, approve
+echo "Step 4: Evaluate + calibrate + approve candidate"
+python training/evaluate.py \
+    --raw-data data/raw/german_credit_with_ts.txt \
+    --schema data/schemas/schema.json \
+    --model-artifact artifacts/models/model_v1.pkl
+python training/calibration.py \
+    --raw-data data/raw/german_credit_with_ts.txt \
+    --schema data/schemas/schema.json \
+    --model-artifact artifacts/models/model_v1.pkl \
+    --output-artifact artifacts/models/calibrated_model_v1.pkl
+python governance/approve_model.py \
+    --model-artifact artifacts/models/calibrated_model_v1.pkl \
+    --metrics artifacts/reports/metrics.json \
+    --calibration-report artifacts/reports/calibration_report.json
+echo "✓ Candidate approved and active model pointer set"
+echo ""
+
+# Step 5: Create drifted current data and run monitoring -> alert -> rollback
+echo "Step 5: Monitoring loop (metric -> breach -> alert -> rollback)"
+python scripts/failure_injection/inject_shifted_current.py \
+    --src data/raw/german_credit_with_ts.txt \
+    --out data/failure_cases/current_shifted_with_ts.txt \
+    --offset 500
+python monitoring/drift.py \
+    --reference-data data/raw/german_credit_with_ts.txt \
+    --current-data data/failure_cases/current_shifted_with_ts.txt \
+    --schema data/schemas/schema.json \
+    --psi-threshold 0.2 \
+    --auto-rollback
+echo "✓ Monitoring loop executed"
+echo ""
+
+# Step 6: Feature parity mismatch example
+echo "Step 6: Feature parity enforcement example"
+python - <<'PY'
+import json
+from pathlib import Path
+
+schema = json.loads(Path("data/schemas/schema.json").read_text())
+base_line = Path("data/raw/german_credit_with_ts.txt").read_text().splitlines()[0].split()
+fields = [f["name"] for f in schema["fields"]]
+record = {k: v for k, v in zip(fields, base_line)}
+
+samples = Path("artifacts/feature_stats/inference_samples.jsonl")
+samples.parent.mkdir(parents=True, exist_ok=True)
+with samples.open("w", encoding="utf-8") as h:
+    for _ in range(30):
+        shifted = dict(record)
+        shifted["credit_amount"] = int(float(shifted["credit_amount"]) * 1.35)
+        shifted.pop("event_time", None)
+        shifted.pop("credit_risk", None)
+        h.write(json.dumps(shifted) + "\n")
+PY
+python - <<'PY'
+from monitoring.feature_check import run_feature_check_and_maybe_fail
+print(run_feature_check_and_maybe_fail())
+PY
+echo "✓ Feature parity check executed"
+echo ""
+
+# Step 7: Show key artifacts
 echo "=========================================="
 echo "📊 KEY ARTIFACTS CREATED"
 echo "=========================================="
@@ -44,7 +105,14 @@ echo ""
 if [ -f "artifacts/reports/split_indices.json" ]; then
     echo "📅 Temporal Split Information:"
     echo "  File: artifacts/reports/split_indices.json"
-    python -c "import json; d = json.load(open('artifacts/reports/split_indices.json')); print(f'  Split Date (T): {d.get(\"temporal_split_date_T\", \"N/A\")}'); print(f'  Train rows: {len(d.get(\"train_idx\", []))}'); print(f'  Validate rows: {len(d.get(\"calibration_idx\", []))}'); print(f'  Test rows: {len(d.get(\"test_idx\", []))}')"
+    python -c "import json; d = json.load(open('artifacts/reports/split_indices.json')); r=d.get('event_time_ranges',{}); print(f'  Split Date (T): {d.get(\"temporal_split_date_T\", \"N/A\")}'); print(f'  Train: {r.get(\"train\",{}).get(\"start\")}..{r.get(\"train\",{}).get(\"end\")} rows={r.get(\"train\",{}).get(\"rows\")}'); print(f'  Validation: {r.get(\"validation\",{}).get(\"start\")} rows={r.get(\"validation\",{}).get(\"rows\")}'); print(f'  Test: {r.get(\"test\",{}).get(\"start\")}..{r.get(\"test\",{}).get(\"end\")} rows={r.get(\"test\",{}).get(\"rows\")}')"
+    echo ""
+fi
+
+if [ -f "artifacts/logs/temporal_split.log" ]; then
+    echo "🧪 Temporal Split Log:"
+    echo "  File: artifacts/logs/temporal_split.log"
+    tail -n 4 artifacts/logs/temporal_split.log
     echo ""
 fi
 
@@ -59,21 +127,28 @@ fi
 if [ -f "artifacts/feature_stats/inference_features.json" ]; then
     echo "⚠️  Inference Feature Stats (Simulated Mismatch - Example):"
     echo "  File: artifacts/feature_stats/inference_features.json"
-    echo "  This shows a 100x shift in credit_amount (units changed to cents)"
+    echo "  This shows a shifted credit_amount distribution for parity enforcement"
     echo ""
 fi
 
 if [ -f "artifacts/logs/feature_mismatch.log" ]; then
     echo "🚨 Feature Mismatch Detection Log (Example):"
     echo "  File: artifacts/logs/feature_mismatch.log"
-    python -c "import json; data = json.load(open('artifacts/logs/feature_mismatch.log')); print(f'  Alert: {data.get(\"alert\")}'); failures = data.get('failures', {}); [print(f'    {k}: {v.get(\"reason\")} (train: {v.get(\"train_mean\")}, infer: {v.get(\"inference_mean\")})') for k, v in list(failures.items())[:2]]"
+    python -c "import json; data = json.load(open('artifacts/logs/feature_mismatch.log')); print(f'  Alert: {data.get(\"alert\")}'); [print(f'    {m}') for m in data.get('messages', [])[:2]]"
     echo ""
 fi
 
 if [ -f "artifacts/monitoring/alert_example.json" ]; then
     echo "📢 Monitoring Alert Example:"
     echo "  File: artifacts/monitoring/alert_example.json"
-    python -c "import json; alert = json.load(open('artifacts/monitoring/alert_example.json')); print(f'  Alert: {alert.get(\"alert\")} (Error rate: {alert.get(\"details\", {}).get(\"error_rate\")})')"
+    python -c "import json; alert = json.load(open('artifacts/monitoring/alert_example.json')); print(f'  Alert: {alert.get(\"alert\")} (PSI: {alert.get(\"details\", {}).get(\"psi\")})')"
+    echo ""
+fi
+
+if [ -f "artifacts/logs/monitoring_alerts.log" ]; then
+    echo "🔁 Alert to Action Log Sequence:"
+    echo "  File: artifacts/logs/monitoring_alerts.log"
+    tail -n 12 artifacts/logs/monitoring_alerts.log
     echo ""
 fi
 
@@ -88,8 +163,9 @@ echo "=========================================="
 echo "📝 DOCUMENTATION"
 echo "=========================================="
 echo ""
-echo "Business Context: README.md → 'Why This System Exists' section"
-echo "Temporal Strategy:  README.md → 'Temporal Validation Strategy' section"
+echo "Business Context: README.md → 'Risk Tradeoffs' section"
+echo "Temporal Strategy:  README.md → 'Temporal Validation' section"
+echo "Failure Flow:       README.md → 'Failure Detection Flow' section"
 echo "Incident Story:     INCIDENT.md (schema/units drift, detection, rollback)"
 echo "Requirements:       requirements.txt (now includes prometheus_client)"
 echo ""

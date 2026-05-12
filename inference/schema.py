@@ -45,7 +45,7 @@ def validate_request(payload: CreditRiskRequest, schema: DatasetSchema) -> pd.Da
         if field.name == schema.target_column:
             continue
         if field.field_type == "timestamp":
-            # timestamp is not expected in online inference payloads
+            # event_time is not expected in online inference payloads
             continue
         value = data[field.name]
         if field.field_type == "categorical" and str(value) not in field.allowed_values:

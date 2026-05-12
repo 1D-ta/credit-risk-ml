@@ -369,19 +369,32 @@ pytest tests/ -q
 - Calibration report: `artifacts/reports/calibration_report.json`
 - Drift report: `artifacts/reports/drift_report.json`
 
-## Why This System Exists
+## Temporal Validation
 
-This service scores loan applicants so risk teams can make consistent, auditable decisions.
+- Raw records include `event_time` (YYYY-MM-DD). Data generation simulates daily batches, missing days, and late rows (out-of-order event times). See `scripts/generate_temporal_data.py` output and `artifacts/reports/temporal_data_manifest.json`.
+- Split logic is hard-coded to prevent leakage: train uses `t < T`, validation uses `t = T`, and test uses `t > T`.
+- The split is auditable in two places:
+	- `artifacts/reports/split_indices.json` stores explicit date ranges and row counts.
+	- `artifacts/logs/temporal_split.log` records train/validation/test ranges and `NO_LEAKAGE_CHECK=passed`.
+- Monitoring reports drift over time, not just one value. `monitoring/drift.py` writes per-day PSI trend entries (`TEMPORAL_PSI: event_time=...`) and stores `temporal_psi_trend` in `artifacts/reports/drift_report.json`.
 
-- **Cost sensitivity:** A false positive (declining a good applicant) hurts revenue and customer relations; a false negative (approving a bad applicant) causes credit loss. The system prioritizes correctness and conservative promotion rules to limit credit losses.
-- **Probability calibration matters:** Business users use predicted probabilities to set thresholds and allocate capital. Calibrated probabilities allow consistent risk limits and automated decisioning.
-- **Rollback over blind retrain:** Rolling back to a known-good model keeps production stable while incidents are investigated. Retraining when data is broken risks amplifying bad data.
-- **Support for risk decisioning:** The pipeline provides auditable artifacts (feature stats, split indices, model metadata) so risk committees can review why a model was promoted or rolled back.
+## Failure Detection Flow
 
-See [docs/INCIDENT.md](docs/INCIDENT.md) for a concrete example of how the system detects drift and performs a safe rollback.
+One run can show the full loop end-to-end:
 
-## Temporal Validation Strategy
+1. Metric: `monitoring/drift.py` computes PSI and logs `METRIC: psi=... threshold=...`.
+2. Breach: if PSI is above threshold (default `0.2`), it logs `BREACH: ...`.
+3. Alert: it logs `ALERT: drift threshold breached` and writes `artifacts/monitoring/alert_example.json`.
+4. Action: with `--auto-rollback`, the same run executes rollback and logs `ACTION: rollback_executed ...`.
 
-- We attach a `timestamp` (YYYY-MM-DD) to raw rows to simulate daily batch ingestion with occasional missing days and late arrivals. Use `scripts/generate_temporal_data.py` to create `data/raw/german_credit_with_ts.txt` from the original raw file.
-- Training uses a strict temporal split: pick a split date `T` (80th percentile of observed dates). The model is trained on rows with `t < T`, validated on `t == T`, and tested on `t > T`. Split indices and `T` are recorded in `artifacts/reports/split_indices.json` so leakage is auditable.
-- This ensures no lookahead leakage and makes the validation more realistic for production credit scoring.
+Evidence is appended to `artifacts/logs/monitoring_alerts.log`, so auditors can trace metric -> breach -> alert -> rollback in order.
+
+## Risk Tradeoffs
+
+Rejecting a good borrower has a real cost: we lose interest income, relationship value, and future cross-sell potential. Approving a bad borrower is usually more expensive: direct credit loss, collection effort, and capital impact. In most retail lending books, the bad approval mistake is more costly, so this system uses a conservative decision threshold of `0.30` for bad-risk probability.
+
+That threshold is not arbitrary. It is chosen to limit severe loss cases while keeping enough approvals to meet business volume goals. If we set it too low, we reject too many good customers. If we set it too high, charge-offs rise. Teams can tune it, but every change should be tied to expected portfolio cost.
+
+Calibration is required because business teams act on probabilities, not raw model scores. If a model says `0.30`, risk expects that to mean roughly 30 out of 100 similar applicants may default. Without calibration, threshold decisions become unstable and hard to defend.
+
+Rollback is safer than retraining during drift because drift often means current data is unreliable. Rolling back returns us to a known-good model immediately, while retraining on unstable data can lock in the failure.

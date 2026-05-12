@@ -26,7 +26,12 @@ def main(src: Path, out: Path, offset: float):
             if not line:
                 continue
             parts = line.split()
-            parts = [shift_token(p, offset) for p in parts]
+            # Keep the final token (credit_risk target) unchanged.
+            if len(parts) > 1:
+                shifted_prefix = [shift_token(p, offset) for p in parts[:-1]]
+                parts = shifted_prefix + [parts[-1]]
+            else:
+                parts = [shift_token(p, offset) for p in parts]
             f_out.write(" ".join(parts) + "\n")
 
 

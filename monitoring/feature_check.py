@@ -8,6 +8,11 @@ import pandas as pd
 
 TRAINING_STATS = Path("artifacts/feature_stats/training_features.json")
 INFERENCE_SAMPLE = Path("artifacts/feature_stats/inference_samples.jsonl")
+FEATURE_MISMATCH_LOG = Path("artifacts/logs/feature_mismatch.log")
+
+STD_THRESHOLD = 3.0
+RELATIVE_MEAN_THRESHOLD = 0.30
+MISSING_PCT_THRESHOLD = 0.20
 
 
 def load_training_stats() -> Dict[str, dict]:
@@ -38,12 +43,13 @@ def compute_inference_stats_from_samples() -> tuple[Dict[str, dict], int]:
     return stats, len(rows)
 
 
-def compare_stats(training: Dict[str, dict], inference: Dict[str, dict], mean_tol: float = 3.0, rel_tol: float = 0.3) -> Dict[str, dict]:
+def compare_stats(training: Dict[str, dict], inference: Dict[str, dict], mean_tol: float = STD_THRESHOLD, rel_tol: float = RELATIVE_MEAN_THRESHOLD) -> Dict[str, dict]:
     """Compare training vs inference stats. Return dict of failures with magnitude."""
     failures = {}
     for name, train in training.items():
         inf = inference.get(name)
         if not inf:
+            failures[name] = {"reason": "missing_feature", "detail": "feature absent in inference batch"}
             continue
         # only compare numeric means/std
         t_mean = train.get("mean")
@@ -53,7 +59,7 @@ def compare_stats(training: Dict[str, dict], inference: Dict[str, dict], mean_to
             # compare missing percentage
             t_m = train.get("missing_pct", 0)
             i_m = inf.get("missing_pct", 0)
-            if abs(t_m - i_m) > 0.2:
+            if abs(t_m - i_m) > MISSING_PCT_THRESHOLD:
                 failures[name] = {"reason": "missing_pct_change", "train": t_m, "inference": i_m}
             continue
 
@@ -76,10 +82,34 @@ def run_feature_check_and_maybe_fail(thresholds=None) -> dict:
     out_inf.parent.mkdir(parents=True, exist_ok=True)
     out_inf.write_text(json.dumps(inference, indent=2, sort_keys=True))
 
-    min_samples = 20
+    min_samples = 1
     failures = {} if sample_count < min_samples else compare_stats(training, inference)
     # log failures
     if failures:
-        msg = {"alert": True, "failures": failures}
-        Path("artifacts/logs/feature_mismatch.log").write_text(json.dumps(msg, indent=2))
+        sample_messages = []
+        for feature, detail in failures.items():
+            if detail.get("reason") == "mean_shift":
+                train_mean = float(detail.get("train_mean", 0.0))
+                inference_mean = float(detail.get("inference_mean", 0.0))
+                deviation_pct = (
+                    abs(inference_mean - train_mean) / (abs(train_mean) if train_mean else 1.0)
+                ) * 100.0
+                sample_messages.append(
+                    f"FEATURE_MISMATCH: {feature} mean deviation {deviation_pct:.0f}% REQUEST_REJECTED"
+                )
+            elif detail.get("reason") == "missing_feature":
+                sample_messages.append(f"FEATURE_MISMATCH: {feature} missing in inference batch REQUEST_REJECTED")
+
+        msg = {
+            "alert": True,
+            "thresholds": {
+                "std_threshold": STD_THRESHOLD,
+                "relative_mean_threshold": RELATIVE_MEAN_THRESHOLD,
+                "missing_pct_threshold": MISSING_PCT_THRESHOLD,
+            },
+            "failures": failures,
+            "messages": sample_messages,
+        }
+        FEATURE_MISMATCH_LOG.parent.mkdir(parents=True, exist_ok=True)
+        FEATURE_MISMATCH_LOG.write_text(json.dumps(msg, indent=2))
     return {"failures": failures, "sample_count": sample_count, "min_samples": min_samples}

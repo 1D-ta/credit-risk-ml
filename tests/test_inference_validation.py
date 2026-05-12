@@ -27,8 +27,8 @@ def _first_row_payload():
     row = frame.iloc[0].to_dict()
     # drop target
     row.pop(schema.target_column, None)
-    # timestamp exists in offline schema but is not part of online request payload
-    row.pop("timestamp", None)
+    # event_time exists in offline schema but is not part of online request payload
+    row.pop("event_time", None)
     return row
 
 

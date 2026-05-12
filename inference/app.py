@@ -109,6 +109,14 @@ async def predict(request: Request, payload: CreditRiskRequest) -> dict[str, obj
 
             fc = run_feature_check_and_maybe_fail()
             if fc.get("failures"):
+                mismatch_log = Path("artifacts/logs/feature_mismatch.log")
+                if mismatch_log.exists():
+                    try:
+                        payload = json.loads(mismatch_log.read_text())
+                        for message in payload.get("messages", []):
+                            logger.info(message)
+                    except Exception:
+                        pass
                 # log and fail
                 REQUEST_ERRORS.inc()
                 logger.info(json.dumps({"request_id": request_id, "event": "feature_mismatch", "failures": fc.get("failures")}))

@@ -1,0 +1,9 @@
+{
+  "days_emitted": 190,
+  "days_requested": 200,
+  "first_day": "2020-01-01",
+  "last_day": "2020-07-18",
+  "late_event_rows": 43,
+  "missing_days": 10,
+  "rows": 1000
+}

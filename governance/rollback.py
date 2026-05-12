@@ -12,20 +12,25 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> None:
-    args = parse_args()
-    if not args.registry.exists():
-        raise FileNotFoundError(f"Registry not found at {args.registry}")
+def rollback_to_latest_approved(registry_path: Path, active_pointer_path: Path) -> dict[str, str]:
+    if not registry_path.exists():
+        raise FileNotFoundError(f"Registry not found at {registry_path}")
 
-    registry = json.loads(args.registry.read_text())
+    registry = json.loads(registry_path.read_text())
     approved_entries = [entry for entry in registry if entry.get("approved")]
     if not approved_entries:
         raise ValueError("No approved model available for rollback")
 
     latest_approved = approved_entries[-1]
-    args.active_pointer.parent.mkdir(parents=True, exist_ok=True)
-    args.active_pointer.write_text(json.dumps({"active_model": latest_approved["artifact"]}, indent=2, sort_keys=True))
-    print(json.dumps({"status": "rolled_back", "active_model": latest_approved["artifact"]}, indent=2, sort_keys=True))
+    active_pointer_path.parent.mkdir(parents=True, exist_ok=True)
+    active_pointer_path.write_text(json.dumps({"active_model": latest_approved["artifact"]}, indent=2, sort_keys=True))
+    return {"status": "rolled_back", "active_model": latest_approved["artifact"]}
+
+
+def main() -> None:
+    args = parse_args()
+    result = rollback_to_latest_approved(args.registry, args.active_pointer)
+    print(json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

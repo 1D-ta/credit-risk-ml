@@ -6,6 +6,24 @@
     721,
     911
   ],
+  "event_time_ranges": {
+    "test": {
+      "end": "2020-07-18",
+      "rows": 191,
+      "start": "2020-06-11"
+    },
+    "train": {
+      "end": "2020-06-09",
+      "rows": 804,
+      "start": "2020-01-01"
+    },
+    "validation": {
+      "end": "2020-06-10",
+      "rows": 5,
+      "start": "2020-06-10"
+    }
+  },
+  "no_leakage_check": "passed",
   "temporal_split_date_T": "2020-06-10",
   "test_idx": [
     152,

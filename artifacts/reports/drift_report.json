@@ -1,0 +1,1244 @@
+{
+  "alert": true,
+  "feature_reports": {
+    "age": {
+      "ks": 1.0,
+      "psi": 0.0
+    },
+    "checking_account_status": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "credit_amount": {
+      "ks": 0.21499999999999997,
+      "psi": 0.3111418639933967
+    },
+    "credit_history": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "duration_months": {
+      "ks": 1.0,
+      "psi": 0.0
+    },
+    "employment_status": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "event_time": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "existing_credits": {
+      "ks": 1.0,
+      "psi": 0.0
+    },
+    "foreign_worker": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "housing": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "installment_rate": {
+      "ks": 1.0,
+      "psi": 0.0
+    },
+    "job": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "num_liable": {
+      "ks": 1.0,
+      "psi": 0.0
+    },
+    "other_debtors": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "other_installment_plans": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "personal_status_sex": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "property": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "purpose": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "residence_since": {
+      "ks": 1.0,
+      "psi": 0.0
+    },
+    "savings_account": {
+      "ks": null,
+      "psi": 0.0
+    },
+    "telephone": {
+      "ks": null,
+      "psi": 0.0
+    }
+  },
+  "psi_threshold": 0.2,
+  "temporal_psi_trend": [
+    {
+      "event_time": "2020-01-01",
+      "max_psi": 8.465771164856863,
+      "max_psi_feature": "telephone",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-02",
+      "max_psi": 13.843537049972259,
+      "max_psi_feature": "credit_history",
+      "rows": 1
+    },
+    {
+      "event_time": "2020-01-03",
+      "max_psi": 7.551369057497591,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-04",
+      "max_psi": 7.553737260653735,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-05",
+      "max_psi": 7.667345288703527,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-06",
+      "max_psi": 7.51465932224963,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-01-07",
+      "max_psi": 6.389163876269885,
+      "max_psi_feature": "purpose",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-08",
+      "max_psi": 8.901801533462525,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-09",
+      "max_psi": 6.1735889898048475,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-11",
+      "max_psi": 9.015713911084823,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-12",
+      "max_psi": 7.531558665366718,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-01-13",
+      "max_psi": 12.433875886372018,
+      "max_psi_feature": "credit_amount",
+      "rows": 1
+    },
+    {
+      "event_time": "2020-01-14",
+      "max_psi": 6.173588989804847,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-15",
+      "max_psi": 6.343941437606828,
+      "max_psi_feature": "employment_status",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-16",
+      "max_psi": 7.671794012943362,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-17",
+      "max_psi": 7.535335392227569,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-18",
+      "max_psi": 7.409985396228716,
+      "max_psi_feature": "purpose",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-19",
+      "max_psi": 7.537670260483607,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-21",
+      "max_psi": 9.195787184417409,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-22",
+      "max_psi": 7.548458008583811,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-01-23",
+      "max_psi": 8.901768198562419,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-24",
+      "max_psi": 9.035891951022172,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-25",
+      "max_psi": 6.146208063176929,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-26",
+      "max_psi": 7.653663159089594,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-27",
+      "max_psi": 8.962774343305604,
+      "max_psi_feature": "purpose",
+      "rows": 7
+    },
+    {
+      "event_time": "2020-01-28",
+      "max_psi": 7.295750470733159,
+      "max_psi_feature": "purpose",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-29",
+      "max_psi": 6.171237454148759,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-30",
+      "max_psi": 8.917835198732545,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-01-31",
+      "max_psi": 4.795808922112101,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-01",
+      "max_psi": 6.602387690935274,
+      "max_psi_feature": "purpose",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-02",
+      "max_psi": 9.088437662530406,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-02-03",
+      "max_psi": 8.053459552863778,
+      "max_psi_feature": "purpose",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-04",
+      "max_psi": 10.163064590679745,
+      "max_psi_feature": "checking_account_status",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-05",
+      "max_psi": 7.473853333654299,
+      "max_psi_feature": "purpose",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-06",
+      "max_psi": 6.159890192790863,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-07",
+      "max_psi": 6.291807971861933,
+      "max_psi_feature": "credit_amount",
+      "rows": 7
+    },
+    {
+      "event_time": "2020-02-08",
+      "max_psi": 6.38066765576769,
+      "max_psi_feature": "purpose",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-09",
+      "max_psi": 7.521636595213586,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-10",
+      "max_psi": 8.885734533292398,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-12",
+      "max_psi": 4.876555732256257,
+      "max_psi_feature": "credit_amount",
+      "rows": 7
+    },
+    {
+      "event_time": "2020-02-13",
+      "max_psi": 4.828790191020071,
+      "max_psi_feature": "credit_history",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-14",
+      "max_psi": 7.55136905749759,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-15",
+      "max_psi": 7.671794012943362,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-16",
+      "max_psi": 6.178926241130891,
+      "max_psi_feature": "credit_amount",
+      "rows": 7
+    },
+    {
+      "event_time": "2020-02-17",
+      "max_psi": 8.974294700028086,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-02-18",
+      "max_psi": 7.562674138349705,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-02-19",
+      "max_psi": 7.517342535600823,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-02-20",
+      "max_psi": 6.159890192790863,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-21",
+      "max_psi": 6.1735889898048475,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-22",
+      "max_psi": 7.553753928053785,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-23",
+      "max_psi": 7.551369057497591,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-24",
+      "max_psi": 5.424367737449313,
+      "max_psi_feature": "telephone",
+      "rows": 8
+    },
+    {
+      "event_time": "2020-02-25",
+      "max_psi": 8.993917258496502,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-02-26",
+      "max_psi": 8.97764962007015,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-02-27",
+      "max_psi": 6.189639322574924,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-02-28",
+      "max_psi": 8.203076162643688,
+      "max_psi_feature": "purpose",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-02-29",
+      "max_psi": 8.962801785513514,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-01",
+      "max_psi": 6.117214888437015,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-02",
+      "max_psi": 7.639040581206112,
+      "max_psi_feature": "property",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-03",
+      "max_psi": 8.960078570262192,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-04",
+      "max_psi": 8.976997914379345,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-05",
+      "max_psi": 7.639040581206112,
+      "max_psi_feature": "property",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-06",
+      "max_psi": 8.97764962007015,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-03-07",
+      "max_psi": 9.079300277394447,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-09",
+      "max_psi": 10.163064590679745,
+      "max_psi_feature": "checking_account_status",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-03-10",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-11",
+      "max_psi": 8.465771164856863,
+      "max_psi_feature": "telephone",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-12",
+      "max_psi": 9.287858533657143,
+      "max_psi_feature": "purpose",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-03-13",
+      "max_psi": 7.531558665366718,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-14",
+      "max_psi": 6.304680982816084,
+      "max_psi_feature": "employment_status",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-15",
+      "max_psi": 7.653663159089594,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-03-16",
+      "max_psi": 9.364061221346976,
+      "max_psi_feature": "credit_history",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-03-17",
+      "max_psi": 7.523988130869674,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-03-18",
+      "max_psi": 8.960078570262192,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-19",
+      "max_psi": 7.5173425356008226,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-20",
+      "max_psi": 8.943199228045167,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-21",
+      "max_psi": 9.093496406260279,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-22",
+      "max_psi": 6.79863308779607,
+      "max_psi_feature": "property",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-23",
+      "max_psi": 7.553753928053785,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-03-24",
+      "max_psi": 6.117214888437014,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-25",
+      "max_psi": 9.123457400224412,
+      "max_psi_feature": "purpose",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-03-26",
+      "max_psi": 6.176629517948256,
+      "max_psi_feature": "purpose",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-27",
+      "max_psi": 8.992591410180033,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-03-28",
+      "max_psi": 7.521636595213586,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-03-29",
+      "max_psi": 7.517342535600823,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-03-31",
+      "max_psi": 7.586744578384922,
+      "max_psi_feature": "employment_status",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-04-01",
+      "max_psi": 9.107712536026172,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-02",
+      "max_psi": 7.5377035953837135,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-04-03",
+      "max_psi": 6.103018759571182,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-04",
+      "max_psi": 10.522036312055814,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-05",
+      "max_psi": 7.531538664466656,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-06",
+      "max_psi": 8.97764962007015,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-04-07",
+      "max_psi": 8.976997914379346,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-08",
+      "max_psi": 9.007533200289917,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-04-09",
+      "max_psi": 6.173588989804847,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-04-11",
+      "max_psi": 9.031443226782338,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-04-12",
+      "max_psi": 9.107712536026172,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-13",
+      "max_psi": 10.677224395048944,
+      "max_psi_feature": "employment_status",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-04-14",
+      "max_psi": 9.169103858711527,
+      "max_psi_feature": "purpose",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-15",
+      "max_psi": 7.5342618797179775,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-16",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-17",
+      "max_psi": 7.457505642237277,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-04-18",
+      "max_psi": 6.427824386904126,
+      "max_psi_feature": "property",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-04-19",
+      "max_psi": 7.531538664466656,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-20",
+      "max_psi": 6.117234889337076,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-21",
+      "max_psi": 8.974294700028086,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-22",
+      "max_psi": 8.054486622877647,
+      "max_psi_feature": "checking_account_status",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-23",
+      "max_psi": 7.531538664466656,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-24",
+      "max_psi": 10.50515696983879,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-25",
+      "max_psi": 8.976997914379346,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-26",
+      "max_psi": 8.943199228045165,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-27",
+      "max_psi": 7.531558665366718,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-28",
+      "max_psi": 7.531538664466656,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-29",
+      "max_psi": 6.103018759571182,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-04-30",
+      "max_psi": 9.093496406260279,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-01",
+      "max_psi": 6.1101735711113445,
+      "max_psi_feature": "purpose",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-02",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-03",
+      "max_psi": 6.103018759571182,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-05",
+      "max_psi": 8.868239303271173,
+      "max_psi_feature": "employment_status",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-07",
+      "max_psi": 6.103018759571182,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-08",
+      "max_psi": 7.517342535600823,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-09",
+      "max_psi": 6.088822630705348,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-10",
+      "max_psi": 4.836871978353953,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-05-11",
+      "max_psi": 9.637559443712766,
+      "max_psi_feature": "purpose",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-12",
+      "max_psi": 4.809491051726036,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-05-13",
+      "max_psi": 9.808522793886516,
+      "max_psi_feature": "credit_history",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-05-14",
+      "max_psi": 8.871362397967603,
+      "max_psi_feature": "employment_status",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-15",
+      "max_psi": 6.173588989804847,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-05-16",
+      "max_psi": 8.959552101216492,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-05-17",
+      "max_psi": 8.099857268390876,
+      "max_psi_feature": "employment_status",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-18",
+      "max_psi": 7.531538664466656,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-19",
+      "max_psi": 8.976997914379348,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-20",
+      "max_psi": 9.481383328946764,
+      "max_psi_feature": "job",
+      "rows": 3
+    },
+    {
+      "event_time": "2020-05-21",
+      "max_psi": 8.97764962007015,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-05-22",
+      "max_psi": 10.636408275564357,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-05-23",
+      "max_psi": 5.140928188876547,
+      "max_psi_feature": "employment_status",
+      "rows": 7
+    },
+    {
+      "event_time": "2020-05-24",
+      "max_psi": 7.517342535600823,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-25",
+      "max_psi": 7.6394874703178095,
+      "max_psi_feature": "employment_status",
+      "rows": 7
+    },
+    {
+      "event_time": "2020-05-26",
+      "max_psi": 6.17892624113089,
+      "max_psi_feature": "credit_amount",
+      "rows": 7
+    },
+    {
+      "event_time": "2020-05-27",
+      "max_psi": 9.64187649298943,
+      "max_psi_feature": "personal_status_sex",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-05-28",
+      "max_psi": 8.962732831110344,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-05-29",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-30",
+      "max_psi": 8.94588244139636,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-05-31",
+      "max_psi": 8.965265616270633,
+      "max_psi_feature": "personal_status_sex",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-01",
+      "max_psi": 8.977674621220228,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-06-02",
+      "max_psi": 7.531558665366718,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-03",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-04",
+      "max_psi": 7.553737260653735,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-06-05",
+      "max_psi": 6.117234889337076,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-06",
+      "max_psi": 10.56622991488387,
+      "max_psi_feature": "credit_amount",
+      "rows": 3
+    },
+    {
+      "event_time": "2020-06-07",
+      "max_psi": 9.112831282656243,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-08",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-09",
+      "max_psi": 8.960078570262192,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-10",
+      "max_psi": 6.103018759571182,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-11",
+      "max_psi": 6.103018759571182,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-12",
+      "max_psi": 6.083611868689811,
+      "max_psi_feature": "purpose",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-06-13",
+      "max_psi": 9.09863515379041,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-14",
+      "max_psi": 8.965265616270633,
+      "max_psi_feature": "personal_status_sex",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-15",
+      "max_psi": 10.642482053279608,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-06-16",
+      "max_psi": 7.5342618797179775,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-17",
+      "max_psi": 6.289219549273776,
+      "max_psi_feature": "purpose",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-18",
+      "max_psi": 7.531558665366718,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-19",
+      "max_psi": 7.517342535600823,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-20",
+      "max_psi": 8.917835198732545,
+      "max_psi_feature": "credit_amount",
+      "rows": 3
+    },
+    {
+      "event_time": "2020-06-21",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-22",
+      "max_psi": 6.171237454148759,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-06-23",
+      "max_psi": 6.896325938139818,
+      "max_psi_feature": "purpose",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-24",
+      "max_psi": 7.645578542681638,
+      "max_psi_feature": "purpose",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-25",
+      "max_psi": 8.960078570262192,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-26",
+      "max_psi": 8.96007857026219,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-27",
+      "max_psi": 4.9031521511743605,
+      "max_psi_feature": "credit_amount",
+      "rows": 7
+    },
+    {
+      "event_time": "2020-06-28",
+      "max_psi": 6.088802629805286,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-29",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-06-30",
+      "max_psi": 7.559970923998446,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-01",
+      "max_psi": 7.559970923998445,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-02",
+      "max_psi": 7.517342535600823,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-03",
+      "max_psi": 6.173588989804847,
+      "max_psi_feature": "credit_amount",
+      "rows": 6
+    },
+    {
+      "event_time": "2020-07-04",
+      "max_psi": 8.164329848861737,
+      "max_psi_feature": "employment_status",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-05",
+      "max_psi": 7.528875452015524,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-06",
+      "max_psi": 6.103018759571182,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-07",
+      "max_psi": 8.976997914379346,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-08",
+      "max_psi": 7.51465932224963,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-09",
+      "max_psi": 7.514679323149691,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-10",
+      "max_psi": 10.497818599053101,
+      "max_psi_feature": "credit_amount",
+      "rows": 4
+    },
+    {
+      "event_time": "2020-07-11",
+      "max_psi": 7.548458008583811,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-12",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-13",
+      "max_psi": 6.4399630412457505,
+      "max_psi_feature": "purpose",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-14",
+      "max_psi": 8.960078570262192,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-15",
+      "max_psi": 7.5457547942325505,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-16",
+      "max_psi": 8.95741535781106,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-17",
+      "max_psi": 6.117214888437014,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    },
+    {
+      "event_time": "2020-07-18",
+      "max_psi": 7.5342618797179775,
+      "max_psi_feature": "credit_amount",
+      "rows": 5
+    }
+  ]
+}

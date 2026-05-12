@@ -1,14 +1,14 @@
 {
   "age": {
-    "max": "67",
-    "mean": null,
-    "min": "67",
+    "max": 75.0,
+    "mean": 35.52114427860697,
+    "min": 19.0,
     "missing_pct": 0.0,
     "name": "age",
-    "std": null
+    "std": 11.197348942786865
   },
   "checking_account_status": {
-    "max": "A11",
+    "max": "A14",
     "mean": null,
     "min": "A11",
     "missing_pct": 0.0,
@@ -16,47 +16,47 @@
     "std": null
   },
   "credit_amount": {
-    "max": 1578.0,
-    "mean": 1578.0,
-    "min": 1578.0,
+    "max": 15945.0,
+    "mean": 3276.8171641791046,
+    "min": 276.0,
     "missing_pct": 0.0,
     "name": "credit_amount",
-    "std": 0.0
+    "std": 2741.8346813456055
   },
   "credit_history": {
     "max": "A34",
     "mean": null,
-    "min": "A34",
+    "min": "A30",
     "missing_pct": 0.0,
     "name": "credit_history",
     "std": null
   },
   "duration_months": {
-    "max": "6",
-    "mean": null,
-    "min": "6",
+    "max": 72.0,
+    "mean": 21.128109452736318,
+    "min": 4.0,
     "missing_pct": 0.0,
     "name": "duration_months",
-    "std": null
+    "std": 12.12419155366032
   },
   "employment_status": {
     "max": "A75",
     "mean": null,
-    "min": "A75",
+    "min": "A71",
     "missing_pct": 0.0,
     "name": "employment_status",
     "std": null
   },
   "existing_credits": {
-    "max": "2",
-    "mean": null,
-    "min": "2",
+    "max": 4.0,
+    "mean": 1.4154228855721394,
+    "min": 1.0,
     "missing_pct": 0.0,
     "name": "existing_credits",
-    "std": null
+    "std": 0.589709129198165
   },
   "foreign_worker": {
-    "max": "A201",
+    "max": "A202",
     "mean": null,
     "min": "A201",
     "missing_pct": 0.0,
@@ -64,39 +64,39 @@
     "std": null
   },
   "housing": {
-    "max": "A152",
+    "max": "A153",
     "mean": null,
-    "min": "A152",
+    "min": "A151",
     "missing_pct": 0.0,
     "name": "housing",
     "std": null
   },
   "installment_rate": {
-    "max": "4",
-    "mean": null,
-    "min": "4",
+    "max": 4.0,
+    "mean": 3.0012437810945274,
+    "min": 1.0,
     "missing_pct": 0.0,
     "name": "installment_rate",
-    "std": null
+    "std": 1.0996426206610166
   },
   "job": {
-    "max": "A173",
+    "max": "A174",
     "mean": null,
-    "min": "A173",
+    "min": "A171",
     "missing_pct": 0.0,
     "name": "job",
     "std": null
   },
   "num_liable": {
-    "max": "1",
-    "mean": null,
-    "min": "1",
+    "max": 2.0,
+    "mean": 1.1492537313432836,
+    "min": 1.0,
     "missing_pct": 0.0,
     "name": "num_liable",
-    "std": null
+    "std": 0.3565602100079369
   },
   "other_debtors": {
-    "max": "A101",
+    "max": "A103",
     "mean": null,
     "min": "A101",
     "missing_pct": 0.0,
@@ -106,21 +106,21 @@
   "other_installment_plans": {
     "max": "A143",
     "mean": null,
-    "min": "A143",
+    "min": "A141",
     "missing_pct": 0.0,
     "name": "other_installment_plans",
     "std": null
   },
   "personal_status_sex": {
-    "max": "A93",
+    "max": "A94",
     "mean": null,
-    "min": "A93",
+    "min": "A91",
     "missing_pct": 0.0,
     "name": "personal_status_sex",
     "std": null
   },
   "property": {
-    "max": "A121",
+    "max": "A124",
     "mean": null,
     "min": "A121",
     "missing_pct": 0.0,
@@ -128,25 +128,25 @@
     "std": null
   },
   "purpose": {
-    "max": "A43",
+    "max": "A49",
     "mean": null,
-    "min": "A43",
+    "min": "A40",
     "missing_pct": 0.0,
     "name": "purpose",
     "std": null
   },
   "residence_since": {
-    "max": "4",
-    "mean": null,
-    "min": "4",
+    "max": 4.0,
+    "mean": 2.8694029850746268,
+    "min": 1.0,
     "missing_pct": 0.0,
     "name": "residence_since",
-    "std": null
+    "std": 1.0792318387097033
   },
   "savings_account": {
     "max": "A65",
     "mean": null,
-    "min": "A65",
+    "min": "A61",
     "missing_pct": 0.0,
     "name": "savings_account",
     "std": null
@@ -154,7 +154,7 @@
   "telephone": {
     "max": "A192",
     "mean": null,
-    "min": "A192",
+    "min": "A191",
     "missing_pct": 0.0,
     "name": "telephone",
     "std": null

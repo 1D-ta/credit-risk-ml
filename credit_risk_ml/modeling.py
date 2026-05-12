@@ -145,6 +145,10 @@ def fit_artifact(frame: pd.DataFrame, schema: DatasetSchema) -> tuple[TrainingAr
         out = Path("artifacts/feature_stats/training_features.json")
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(stats, indent=2, sort_keys=True))
+
+        required_out = Path("artifacts/feature_stats/feature_stats_training.json")
+        required_out.parent.mkdir(parents=True, exist_ok=True)
+        required_out.write_text(json.dumps(stats, indent=2, sort_keys=True))
     except Exception:
         # don't fail training for stats write issues, but log
         import sys
