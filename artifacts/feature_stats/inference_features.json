@@ -1,0 +1,162 @@
+{
+  "age": {
+    "max": 67.0,
+    "mean": 67.0,
+    "min": 67.0,
+    "missing_pct": 0.0,
+    "name": "age",
+    "std": 0.0
+  },
+  "checking_account_status": {
+    "max": "A11",
+    "mean": null,
+    "min": "A11",
+    "missing_pct": 0.0,
+    "name": "checking_account_status",
+    "std": null
+  },
+  "credit_amount": {
+    "max": 11690.0,
+    "mean": 11285.346153846154,
+    "min": 1169.0,
+    "missing_pct": 0.0,
+    "name": "credit_amount",
+    "std": 2063.3378577888343
+  },
+  "credit_history": {
+    "max": "A34",
+    "mean": null,
+    "min": "A34",
+    "missing_pct": 0.0,
+    "name": "credit_history",
+    "std": null
+  },
+  "duration_months": {
+    "max": 6.0,
+    "mean": 6.0,
+    "min": 6.0,
+    "missing_pct": 0.0,
+    "name": "duration_months",
+    "std": 0.0
+  },
+  "employment_status": {
+    "max": "A75",
+    "mean": null,
+    "min": "A75",
+    "missing_pct": 0.0,
+    "name": "employment_status",
+    "std": null
+  },
+  "existing_credits": {
+    "max": 2.0,
+    "mean": 2.0,
+    "min": 2.0,
+    "missing_pct": 0.0,
+    "name": "existing_credits",
+    "std": 0.0
+  },
+  "foreign_worker": {
+    "max": "A201",
+    "mean": null,
+    "min": "A201",
+    "missing_pct": 0.0,
+    "name": "foreign_worker",
+    "std": null
+  },
+  "housing": {
+    "max": "A152",
+    "mean": null,
+    "min": "A152",
+    "missing_pct": 0.0,
+    "name": "housing",
+    "std": null
+  },
+  "installment_rate": {
+    "max": 4.0,
+    "mean": 4.0,
+    "min": 4.0,
+    "missing_pct": 0.0,
+    "name": "installment_rate",
+    "std": 0.0
+  },
+  "job": {
+    "max": "A173",
+    "mean": null,
+    "min": "A173",
+    "missing_pct": 0.0,
+    "name": "job",
+    "std": null
+  },
+  "num_liable": {
+    "max": 1.0,
+    "mean": 1.0,
+    "min": 1.0,
+    "missing_pct": 0.0,
+    "name": "num_liable",
+    "std": 0.0
+  },
+  "other_debtors": {
+    "max": "A101",
+    "mean": null,
+    "min": "A101",
+    "missing_pct": 0.0,
+    "name": "other_debtors",
+    "std": null
+  },
+  "other_installment_plans": {
+    "max": "A143",
+    "mean": null,
+    "min": "A143",
+    "missing_pct": 0.0,
+    "name": "other_installment_plans",
+    "std": null
+  },
+  "personal_status_sex": {
+    "max": "A93",
+    "mean": null,
+    "min": "A93",
+    "missing_pct": 0.0,
+    "name": "personal_status_sex",
+    "std": null
+  },
+  "property": {
+    "max": "A121",
+    "mean": null,
+    "min": "A121",
+    "missing_pct": 0.0,
+    "name": "property",
+    "std": null
+  },
+  "purpose": {
+    "max": "A43",
+    "mean": null,
+    "min": "A43",
+    "missing_pct": 0.0,
+    "name": "purpose",
+    "std": null
+  },
+  "residence_since": {
+    "max": 4.0,
+    "mean": 4.0,
+    "min": 4.0,
+    "missing_pct": 0.0,
+    "name": "residence_since",
+    "std": 0.0
+  },
+  "savings_account": {
+    "max": "A65",
+    "mean": null,
+    "min": "A65",
+    "missing_pct": 0.0,
+    "name": "savings_account",
+    "std": null
+  },
+  "telephone": {
+    "max": "A192",
+    "mean": null,
+    "min": "A192",
+    "missing_pct": 0.0,
+    "name": "telephone",
+    "std": null
+  }
+}

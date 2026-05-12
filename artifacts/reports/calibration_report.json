@@ -1,0 +1,7 @@
+{
+  "brier_score_after": 0.1,
+  "brier_score_before": 0.18246799202212927,
+  "calibration_gap_after": 0.0,
+  "calibration_size": 5,
+  "method": "isotonic_regression"
+}

@@ -1,0 +1,4 @@
+{
+  "alert": "high_error_rate",
+  "details": {"error_rate": 0.32, "window": "1m"}
+}

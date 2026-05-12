@@ -11,8 +11,24 @@ dist/
 .env.*
 .idea/
 .vscode/
+
+# Production runtime artifacts (should never be committed)
 artifacts/logs/*
-artifacts/models/*
-artifacts/reports/*
+artifacts/models/*.pkl
+artifacts/models/candidate/
+artifacts/models/approved/
+artifacts/models/split_indices.json
 !artifacts/models/.gitkeep
 !artifacts/reports/.gitkeep
+
+# Cloud credentials & secrets (for production deployment)
+*.key
+*.pem
+credentials*.json
+secrets*.json
+config.local.py
+config.local.json
+.aws/
+.gcp/
+/secrets/
+/keys/

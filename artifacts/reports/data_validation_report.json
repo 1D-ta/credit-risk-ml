@@ -1,0 +1,10 @@
+{
+  "columns": 22,
+  "data_hash": "a91bbb960312ed86ca976a459117e1c86050d5c3a8763251e47da7f4c6cf3676",
+  "dataset_name": "statlog_german_credit",
+  "rows": 1000,
+  "target_counts": {
+    "1": 700,
+    "2": 300
+  }
+}

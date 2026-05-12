@@ -31,22 +31,35 @@ def main() -> None:
     report = dataset_summary(rows, schema, args.raw_data)
     frame = rows_to_frame(rows, schema)
 
-    # deterministic split into train/calibration/test (60/20/20)
-    import numpy as _np
+    # Temporal split: train on t < T, validate on T, test on t > T
+    import pandas as _pd
 
-    rng = _np.random.RandomState(42)
-    indices = rng.permutation(len(frame))
-    n = len(frame)
-    n_train = int(n * 0.6)
-    n_cal = int(n * 0.2)
-    train_idx = indices[:n_train].tolist()
-    calibration_idx = indices[n_train : n_train + n_cal].tolist()
-    test_idx = indices[n_train + n_cal :].tolist()
+    if "timestamp" not in frame.columns:
+        raise RuntimeError("timestamp column missing from data; run scripts/generate_temporal_data.py first")
+
+    # ensure timestamp parsed as date
+    frame["timestamp"] = _pd.to_datetime(frame["timestamp"], errors="coerce").dt.date
+    if frame["timestamp"].isna().any():
+        raise RuntimeError("Some timestamps could not be parsed as dates")
+
+    unique_dates = sorted(frame["timestamp"].unique())
+    if len(unique_dates) < 3:
+        raise RuntimeError("Not enough distinct dates for temporal split")
+
+    # choose T as the 80th percentile date so train < T, validate = T, test > T
+    split_pos = int(len(unique_dates) * 0.8)
+    split_pos = max(1, min(split_pos, len(unique_dates) - 2))
+    T = unique_dates[split_pos]
+
+    train_idx = frame.index[frame["timestamp"] < T].tolist()
+    calibration_idx = frame.index[frame["timestamp"] == T].tolist()
+    test_idx = frame.index[frame["timestamp"] > T].tolist()
 
     split_indices = {
         "train_idx": train_idx,
         "calibration_idx": calibration_idx,
         "test_idx": test_idx,
+        "temporal_split_date_T": str(T),
     }
 
     args.report_output.parent.mkdir(parents=True, exist_ok=True)

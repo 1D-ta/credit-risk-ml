@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 import pandas as pd
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from credit_risk_ml.data_contract import DatasetSchema, load_schema
 
@@ -13,23 +13,23 @@ class CreditRiskRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     checking_account_status: str
-    duration_months: int
+    duration_months: int = Field(ge=1, le=120)
     credit_history: str
     purpose: str
-    credit_amount: int
+    credit_amount: int = Field(ge=1, le=100000)
     savings_account: str
     employment_status: str
-    installment_rate: int
+    installment_rate: int = Field(ge=1, le=4)
     personal_status_sex: str
     other_debtors: str
-    residence_since: int
+    residence_since: int = Field(ge=1, le=4)
     property: str
-    age: int
+    age: int = Field(ge=18, le=120)
     other_installment_plans: str
     housing: str
-    existing_credits: int
+    existing_credits: int = Field(ge=1, le=4)
     job: str
-    num_liable: int
+    num_liable: int = Field(ge=1, le=2)
     telephone: str
     foreign_worker: str
 
@@ -43,6 +43,9 @@ def validate_request(payload: CreditRiskRequest, schema: DatasetSchema) -> pd.Da
     data = payload.model_dump()
     for field in schema.fields:
         if field.name == schema.target_column:
+            continue
+        if field.field_type == "timestamp":
+            # timestamp is not expected in online inference payloads
             continue
         value = data[field.name]
         if field.field_type == "categorical" and str(value) not in field.allowed_values:

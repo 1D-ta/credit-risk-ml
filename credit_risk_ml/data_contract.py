@@ -81,6 +81,10 @@ def validate_and_load_rows(raw_path: Path, schema: DatasetSchema) -> list[dict[s
                         f"Field {field_spec.name} on line {line_number} must be an integer, got {token!r}"
                     )
                 record[field_spec.name] = int(token)
+            elif field_spec.field_type == "timestamp":
+                # accept ISO date strings YYYY-MM-DD
+                # keep as string for downstream conversion
+                record[field_spec.name] = token
             elif field_spec.field_type in {"categorical", "target"}:
                 if token not in field_spec.allowed_values:
                     raise ValueError(
@@ -125,4 +129,9 @@ def target_series(frame: pd.DataFrame, schema: DatasetSchema) -> pd.Series:
 
 
 def feature_frame(frame: pd.DataFrame, schema: DatasetSchema) -> pd.DataFrame:
-    return frame.drop(columns=[schema.target_column])
+    feature_columns = [
+        field.name
+        for field in schema.fields
+        if field.name != schema.target_column and field.field_type in {"categorical", "integer"}
+    ]
+    return frame[feature_columns]

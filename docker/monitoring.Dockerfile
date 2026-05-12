@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . ./
 
-CMD ["/bin/sh", "-c", "python monitoring/drift.py --reference-data data/raw/german_credit_raw.txt --current-data data/raw/german_credit_raw.txt --schema data/schemas/schema.json"]
+CMD ["/bin/sh", "-c", "python scripts/generate_temporal_data.py --raw data/raw/german_credit_raw.txt --out data/raw/german_credit_with_ts.txt && python monitoring/drift.py --reference-data data/raw/german_credit_with_ts.txt --current-data data/raw/german_credit_with_ts.txt --schema data/schemas/schema.json"]

@@ -14,6 +14,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from credit_risk_ml.data_contract import DatasetSchema, load_schema, rows_to_frame, validate_and_load_rows
+from monitoring.metrics import save_alert_example, set_psi
 
 
 def population_stability_index(reference: pd.Series, current: pd.Series, bins: int = 10) -> float:
@@ -121,6 +122,22 @@ def main() -> None:
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True))
+
+    # Export a single PSI value for Prometheus/Grafana panels.
+    psi_for_metrics = float(prediction_psi) if prediction_psi is not None else float(
+        max((item["psi"] for item in report["feature_reports"].values()), default=0.0)
+    )
+    set_psi(psi_for_metrics)
+
+    if report["alert"] or (prediction_psi is not None and prediction_psi > 0.2):
+        save_alert_example(
+            "high_psi",
+            {
+                "psi": psi_for_metrics,
+                "prediction_psi": prediction_psi,
+                "window": "latest_batch",
+            },
+        )
 
     if report["alert"] or (prediction_psi is not None and prediction_psi > 0.2):
         print("DRIFT DETECTED")

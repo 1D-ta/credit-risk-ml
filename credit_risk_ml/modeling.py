@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pickle
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -128,6 +129,28 @@ def fit_artifact(frame: pd.DataFrame, schema: DatasetSchema) -> tuple[TrainingAr
         target_column=schema.target_column,
         decision_threshold=DEFAULT_DECISION_THRESHOLD,
     )
+    # save training feature stats for serving-time consistency checks
+    try:
+        stats = {}
+        for col in artifact.feature_columns:
+            ser = frame[col]
+            stats[col] = {
+                "name": col,
+                "mean": None if not col in numeric_columns else float(ser.dropna().astype(float).mean()),
+                "std": None if not col in numeric_columns else float(ser.dropna().astype(float).std()),
+                "missing_pct": float(ser.isna().mean()),
+                "min": None if ser.dropna().empty else (float(ser.dropna().min()) if col in numeric_columns else str(ser.dropna().min())),
+                "max": None if ser.dropna().empty else (float(ser.dropna().max()) if col in numeric_columns else str(ser.dropna().max())),
+            }
+        out = Path("artifacts/feature_stats/training_features.json")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(stats, indent=2, sort_keys=True))
+    except Exception:
+        # don't fail training for stats write issues, but log
+        import sys
+
+        print("Warning: failed to write training feature stats", file=sys.stderr)
+
     return artifact, metrics
 
 
