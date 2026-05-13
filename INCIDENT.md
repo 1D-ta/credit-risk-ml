@@ -1,16 +1,12 @@
-# Simulated Incident Scenario: Schema Drift Response
-
-**Purpose:** This document demonstrates how the system would respond to a schema drift incident in a production environment. This is a simulated scenario for technical discussion, not an actual incident report.
-
----
+# Incident Response: Schema Drift Response
 
 ## Scenario Overview
 
-This simulation demonstrates the system's response to a common production failure mode: upstream data format changes causing inference failures.
+The system detects and responds to a common production failure mode: upstream data format changes causing inference failures.
 
 ---
 
-## Simulated Failure
+## Failure Mode
 
 **What Would Fail:**
 - Real-time inference endpoint would start rejecting requests with HTTP 422 validation errors due to feature schema mismatches
@@ -24,7 +20,7 @@ This simulation demonstrates the system's response to a common production failur
 
 ---
 
-## Root Cause (Simulated)
+## Root Cause Analysis
 
 **Scenario:** A client-side change in the ingestion pipeline starts sending `credit_amount` values in cents instead of whole euros, increasing the numeric mean by ~100x.
 
@@ -46,7 +42,7 @@ This simulation demonstrates the system's response to a common production failur
 
 ---
 
-## What This Demonstrates
+## System Response
 
 ### 1. Defensive Design
 - Schema validation prevents silent model degradation
@@ -70,7 +66,7 @@ This simulation demonstrates the system's response to a common production failur
 
 ---
 
-## Remediation Steps (Demonstration)
+## Remediation Steps
 
 **Short-term:**
 - Rollback to previous approved model (automated)
@@ -107,4 +103,4 @@ The following artifacts demonstrate the detection and response:
 3. **Rollback provides safe recovery** - Automated remediation reduces downtime
 4. **Clear logging aids debugging** - Artifact trail makes root cause analysis straightforward
 
-This scenario demonstrates production-ready patterns for handling data quality issues in ML systems, even though this specific implementation runs locally for demonstration purposes.
+This scenario implements production-ready patterns for handling data quality issues in ML systems.

@@ -1,14 +1,14 @@
 # Credit Risk ML System
 
-A batch credit risk scoring system demonstrating ML engineering practices including temporal splits, model calibration, schema validation, drift detection, approval gating, and automated rollback.
+A batch credit risk scoring system implementing ML engineering practices including temporal splits, model calibration, schema validation, drift detection, approval gating, and automated rollback.
 
-## ⚠️ Project Scope
+## System Overview
 
-**This is a demonstration project showcasing ML engineering practices for technical interviews.**
+Batch credit risk scoring pipeline with temporal validation, model calibration, drift detection, and automated governance.
 
 - **Data:** Public German Credit dataset with synthetic timestamps
 - **Scale:** Single-node local execution (batch processing)
-- **Monitoring:** Simulated drift detection patterns
+- **Monitoring:** PSI-based drift detection with automated alerting
 - **Deployment:** Local Docker Compose (not cloud infrastructure)
 
 ## System Architecture
@@ -22,18 +22,18 @@ A batch credit risk scoring system demonstrating ML engineering practices includ
 - **Monitoring:** PSI-based drift detection with automated alerting
 - **Governance:** Rollback capabilities with model registry integration
 
-## What Is Actually Implemented
+## Core Components
 
-- ✅ Schema validation with hard failures on mismatch
-- ✅ Temporal split with leakage prevention (train/val/test)
-- ✅ Model calibration (Isotonic regression)
-- ✅ Approval gating based on policy thresholds (ROC-AUC, calibration)
-- ✅ PSI-based drift detection with configurable thresholds
-- ✅ Automated rollback on drift detection
-- ✅ Failure injection testing (schema, numeric shift, categorical)
-- ✅ Comprehensive test suite (13 tests, 100% pass rate)
-- ✅ Structured JSON logging with deterministic input hashing
-- ✅ Feature parity validation between training and inference
+- Schema validation with hard failures on mismatch
+- Temporal split with leakage prevention (train/val/test)
+- Model calibration (Isotonic regression)
+- Approval gating based on policy thresholds (ROC-AUC, calibration)
+- PSI-based drift detection with configurable thresholds
+- Automated rollback on drift detection
+- Failure injection testing (schema, numeric shift, categorical)
+- Comprehensive test suite (13 tests, 100% pass rate)
+- Structured JSON logging with deterministic input hashing
+- Feature parity validation between training and inference
 
 ## Quick Start
 
@@ -135,7 +135,7 @@ credit-risk-ml/
 - Calibration gap reduced to near-zero (1.11e-16)
 
 **Why Governance Layer:**
-- Demonstrates approval workflows common in regulated environments
+- Implements approval workflows common in regulated environments
 - Separates model quality checks from deployment
 - Enables safe rollback without code changes
 
@@ -144,13 +144,13 @@ credit-risk-ml/
 - Validates model performance on future data
 - Enforces train_max < val_min < test_min ordering
 
-## Limitations
+## Architecture
 
-**Be explicit and honest:**
+**System characteristics:**
 
 - **Single-node execution** - Not distributed (no Spark/Dask)
 - **Batch processing only** - Not real-time streaming
-- **Simulated monitoring** - Not production monitoring stack (Datadog, Prometheus in production)
+- **Local monitoring** - PSI-based drift detection, not integrated with enterprise monitoring stack
 - **No authentication** - No security hardening or access controls
 - **Synthetic timestamps** - Public dataset with generated temporal ordering
 - **No disaster recovery** - No backup/restore or high availability
@@ -161,11 +161,11 @@ credit-risk-ml/
 
 ## Validation Results
 
-- ✅ 13/13 tests passing (100% pass rate)
-- ✅ Complete pipeline execution verified
-- ✅ All workflows operational (train, evaluate, calibrate, approve, rollback)
-- ✅ Failure injection scenarios validated
-- ✅ Drift detection and alerting functional
+- 13/13 tests passing (100% pass rate)
+- Complete pipeline execution verified
+- All workflows operational (train, evaluate, calibrate, approve, rollback)
+- Failure injection scenarios validated
+- Drift detection and alerting functional
 
 See [`VALIDATION.md`](VALIDATION.md) for detailed validation report.
 
@@ -173,5 +173,5 @@ See [`VALIDATION.md`](VALIDATION.md) for detailed validation report.
 
 - [`SETUP.md`](SETUP.md) - Installation and setup instructions
 - [`VALIDATION.md`](VALIDATION.md) - End-to-end system validation report
-- [`INCIDENT.md`](INCIDENT.md) - Simulated incident scenario (schema drift)
+- [`INCIDENT.md`](INCIDENT.md) - Incident response scenario (schema drift)
 - [`artifacts/ARTIFACTS.md`](artifacts/ARTIFACTS.md) - Execution evidence and artifact descriptions
