@@ -12,6 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from credit_risk_ml.data_contract import dataset_summary, load_schema, rows_to_frame, validate_and_load_rows
 from credit_risk_ml.modeling import fit_artifact, save_artifact
+from credit_risk_ml.split_validator import log_split_statistics, validate_temporal_split_integrity
 
 
 def parse_args() -> argparse.Namespace:
@@ -74,6 +75,10 @@ def main() -> None:
     
     if not (train_max < val_min and val_max < test_min):
         raise RuntimeError("Temporal leakage detected: split ordering is invalid")
+
+    # Validate temporal integrity and log statistics
+    validate_temporal_split_integrity(frame, train_idx, test_idx, timestamp_column="event_time")
+    log_split_statistics(frame, train_idx, test_idx, schema=schema)
 
     # Explicit logging after split creation
     print(f"TRAIN_RANGE: {train_dates.min()} to {train_dates.max()}")

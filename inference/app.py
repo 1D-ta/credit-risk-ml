@@ -21,17 +21,45 @@ from credit_risk_ml.data_contract import load_schema
 from credit_risk_ml.modeling import load_artifact, predict_bad_probability_from_model
 
 from inference.schema import CreditRiskRequest, load_inference_schema, validate_request
+from inference.logging_config import create_inference_log_entry, write_log_entry
 
 
 app = FastAPI(title="Credit Risk Scoring API", version="1.0.0")
 
 # Prometheus metrics (exported on port 8001)
-REQUEST_COUNT = Counter("inference_requests_total", "Total inference requests")
-REQUEST_ERRORS = Counter("inference_request_errors_total", "Total inference errors")
-REQUEST_LATENCY = Histogram("inference_request_latency_seconds", "Inference request latency seconds")
-PREDICTIONS = Counter("inference_predictions_total", "Total predictions made")
+# PURPOSE (Interview):
+# - REQUEST_COUNT: traffic volume and burst detection
+# - REQUEST_LATENCY: SLA monitoring and bottleneck detection
+# - PREDICTION_BUCKET: distribution of risk scores (model behavior)
+# - ERROR_COUNT: failure rate and error types
+# - DECISION_BUCKET: business metrics (approval rate)
+REQUEST_COUNT = Counter(
+    "inference_requests_total",
+    "Total inference requests",
+    ["status"]
+)
+REQUEST_ERRORS = Counter(
+    "inference_request_errors_total",
+    "Total inference errors",
+    ["error_type"]
+)
+REQUEST_LATENCY = Histogram(
+    "inference_request_latency_seconds",
+    "Inference request latency in seconds",
+    buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 5.0)
+)
+PREDICTION_BUCKET = Histogram(
+    "inference_prediction_score",
+    "Distribution of predicted risk scores",
+    buckets=(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+)
+DECISION_BUCKET = Counter(
+    "inference_decisions_total",
+    "Count of decisions by type",
+    ["decision"]
+)
 
-start_http_server(8001)
+start_http_server(8001)  # /metrics endpoint on port 8001
 
 # simple in-memory rate limiter: max requests per minute per client
 _RATE_LIMIT = {"window_seconds": 60, "max_per_window": 60, "clients": {}}
@@ -70,6 +98,13 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
+@app.get("/metrics")
+def metrics_endpoint() -> str:
+    """Prometheus metrics endpoint for monitoring."""
+    from prometheus_client import generate_latest, CollectorRegistry, REGISTRY
+    return generate_latest(REGISTRY).decode("utf-8")
+
+
 @app.post("/predict")
 async def predict(request: Request, payload: CreditRiskRequest) -> dict[str, object]:
     if ACTIVE_MODEL is None:
@@ -86,12 +121,12 @@ async def predict(request: Request, payload: CreditRiskRequest) -> dict[str, obj
     # purge old
     client_record[:] = [ts for ts in client_record if ts > now - win]
     if len(client_record) >= _RATE_LIMIT["max_per_window"]:
-        REQUEST_ERRORS.inc()
+        REQUEST_ERRORS.labels(error_type="rate_limited").inc()
         logger.info(json.dumps({"request_id": request_id, "event": "rate_limited", "client": client}))
         raise HTTPException(status_code=429, detail="rate limit exceeded")
     client_record.append(now)
 
-    REQUEST_COUNT.inc()
+    REQUEST_COUNT.labels(status="received").inc()
     start = time.perf_counter()
 
     try:
@@ -99,7 +134,7 @@ async def predict(request: Request, payload: CreditRiskRequest) -> dict[str, obj
         try:
             frame = validate_request(payload, SCHEMA)
         except ValueError as exc:
-            REQUEST_ERRORS.inc()
+            REQUEST_ERRORS.labels(error_type="validation_error").inc()
             logger.info(json.dumps({"request_id": request_id, "event": "validation_error", "detail": str(exc)}))
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -123,7 +158,7 @@ async def predict(request: Request, payload: CreditRiskRequest) -> dict[str, obj
                     except Exception:
                         pass
                 # log and fail
-                REQUEST_ERRORS.inc()
+                REQUEST_ERRORS.labels(error_type="feature_mismatch").inc()
                 logger.info(json.dumps({"request_id": request_id, "event": "feature_mismatch", "failures": fc.get("failures")}))
                 raise HTTPException(status_code=503, detail="feature mismatch detected; request rejected")
         except HTTPException:
@@ -140,31 +175,42 @@ async def predict(request: Request, payload: CreditRiskRequest) -> dict[str, obj
 
             probability = await asyncio.wait_for(_predict(), timeout=2.0)
         except asyncio.TimeoutError:
-            REQUEST_ERRORS.inc()
+            REQUEST_ERRORS.labels(error_type="timeout").inc()
             logger.info(json.dumps({"request_id": request_id, "event": "timeout"}))
             raise HTTPException(status_code=504, detail="prediction timed out")
 
-        decision = "decline" if probability >= ACTIVE_MODEL.decision_threshold else "approve"
-        request_hash = hashlib.sha256(json.dumps(payload.model_dump(), sort_keys=True).encode("utf-8")).hexdigest()
+        # Business decision layer: three-tier decisioning
+        # PURPOSE (Interview):
+        # - Low risk (p<0.3): Approve automatically
+        # - Medium risk (0.3≤p≤0.7): Flag for manual review (fraud signal, model uncertainty)
+        # - High risk (p>0.7): Reject automatically (cost of default > processing cost)
+        if probability < 0.3:
+            decision = "approve"
+        elif probability <= 0.7:
+            decision = "review"
+        else:
+            decision = "reject"
 
-        # structured prediction logging (append JSON lines)
-        from datetime import datetime
+        # structured prediction logging: deterministic input hash + all metadata
+        start_time = start  # capture timing
+        elapsed_ms = (time.perf_counter() - start_time) * 1000
+        
+        log_entry = create_inference_log_entry(
+            request_id=request_id,
+            payload_dict=payload.model_dump(),
+            prediction=probability,
+            decision=decision,
+            model_version=ACTIVE_MODEL.model_version,
+            client_id=client,
+            latency_ms=elapsed_ms,
+        )
+        write_log_entry(log_entry, PREDICTION_LOG)
 
-        log_entry = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
-            "event": "predict",
-            "request_id": request_id,
-            "client": client,
-            "model_version": ACTIVE_MODEL.model_version,
-            "request_hash": request_hash,
-            "prob_bad": probability,
-            "decision": decision,
-        }
-        PREDICTION_LOG.parent.mkdir(parents=True, exist_ok=True)
-        with PREDICTION_LOG.open("a", encoding="utf-8") as _handle:
-            _handle.write(json.dumps(log_entry, sort_keys=True) + "\n")
-
-        PREDICTIONS.inc()
+        # Record prediction metrics
+        PREDICTION_BUCKET.observe(probability)
+        DECISION_BUCKET.labels(decision=decision).inc()
+        REQUEST_COUNT.labels(status="success").inc()
+        
         return {"risk_score": probability, "decision": decision, "model_version": ACTIVE_MODEL.model_version, "request_id": request_id}
 
     finally:
