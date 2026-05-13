@@ -27,5 +27,3 @@ def mark_model_unhealthy(metric: str, value: float):
     }
     
     health_file.write_text(json.dumps(health_status, indent=2))
-
-# Made with Bob

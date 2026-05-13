@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Create a dataset with unexpected categorical/target values.
-This script replaces the target value (last token) with an out-of-schema value ('3')
-for the first `n` rows (default 50) to provoke validation failures.
+Create a dataset with an unexpected categorical feature value.
+
+This script corrupts the first categorical feature after the timestamp
+so validation fails on an out-of-schema value without changing the target.
 """
 import argparse
 from pathlib import Path
@@ -17,7 +18,9 @@ def main(src: Path, out: Path, n: int):
                 continue
             parts = line.split()
             if i < n:
-                parts[-1] = "3"
+                # Replace checking_account_status with an invalid category token.
+                if len(parts) > 1:
+                    parts[1] = "A999"
             f_out.write(" ".join(parts) + "\n")
 
 

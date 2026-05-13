@@ -1,25 +1,47 @@
 .DS_Store
 __pycache__/
 *.pyc
+*.pyo
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.coverage
+htmlcov/
 .venv/
 venv/
 build/
 dist/
 *.ipynb_checkpoints/
+*.log
+logs/
+*.tmp
+*.swp
+*.bak
 .env
 .env.*
 .idea/
 .vscode/
 
 # Production runtime artifacts (should never be committed)
-artifacts/logs/*
+artifacts/logs/
 artifacts/models/*.pkl
 artifacts/models/candidate/
 artifacts/models/approved/
+artifacts/models/**/*.pkl
+artifacts/models/*.joblib
+artifacts/models/**/*.joblib
+artifacts/models/*.h5
+artifacts/models/**/*.h5
 artifacts/models/split_indices.json
+artifacts/feature_stats/inference_samples.jsonl
 !artifacts/models/.gitkeep
 !artifacts/reports/.gitkeep
+
+# ML artifacts / caches
+*.pkl
+*.joblib
+*.h5
 
 # Cloud credentials & secrets (for production deployment)
 *.key

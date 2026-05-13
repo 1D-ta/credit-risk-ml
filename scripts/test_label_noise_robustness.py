@@ -11,6 +11,9 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -54,7 +57,7 @@ def main():
     
     print(f"Training data: {len(train_frame):,} samples")
     print(f"Test data: {len(test_frame):,} samples")
-    print(f"Baseline target rate: {train_frame[schema.target_column].mean()*100:.2f}%")
+    print(f"Baseline target rate: {(train_frame[schema.target_column] == 2).mean()*100:.2f}%")
     
     # Train model on clean data
     print(f"\n1. Training model on CLEAN labels...")
@@ -70,7 +73,7 @@ def main():
     # Inject label noise
     print(f"\n2. Injecting {args.noise_fraction*100:.1f}% label noise...")
     y_train_clean = (train_frame[schema.target_column] == 2).astype(int)
-    y_train_noisy, noise_metadata = inject_label_noise(
+    y_train_noisy_binary, noise_metadata = inject_label_noise(
         y_train_clean,
         noise_fraction=args.noise_fraction,
         noise_type="flip"
@@ -83,7 +86,11 @@ def main():
     # Retrain with noisy labels
     print(f"\n3. Training model on NOISY labels...")
     train_frame_noisy = train_frame.copy()
-    train_frame_noisy[schema.target_column] = y_train_noisy
+    # Convert back to the repo's native target encoding: 1=good, 2=bad.
+    train_frame_noisy[schema.target_column] = pd.Series(
+        np.where(y_train_noisy_binary == 1, 2, 1),
+        index=train_frame_noisy.index,
+    )
     
     artifact_noisy, metrics_noisy = fit_artifact(train_frame_noisy, schema)
     pred_noisy = artifact_noisy.pipeline.predict_proba(X_test)[:, 1]

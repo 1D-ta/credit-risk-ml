@@ -1,0 +1,53 @@
+{
+  "conclusion": "Label noise of 5.0% causes 1.97% AUC degradation",
+  "data": {
+    "target_rate": 0.2910569105691057,
+    "test_samples": 385,
+    "train_samples": 615
+  },
+  "model_clean": {
+    "metrics": {
+      "approval_rate": 0.06666666666666667,
+      "roc_auc": 0.7977038593613859
+    },
+    "version": "v1"
+  },
+  "model_noisy": {
+    "metrics": {
+      "approval_rate": 0.032520325203252036,
+      "roc_auc": 0.7622366640896792
+    },
+    "version": "v1"
+  },
+  "noise_injection": {
+    "noise_fraction_actual": 0.04878048780487805,
+    "noise_fraction_requested": 0.05,
+    "noise_type": "flip",
+    "num_0_to_1_flips": 25,
+    "num_1_to_0_flips": 5,
+    "num_flipped": 30,
+    "seed": 42,
+    "total_labels": 615
+  },
+  "performance_comparison": {
+    "clean_metrics": {
+      "accuracy": 0.7325,
+      "auc": 0.8031,
+      "precision": 0.5556,
+      "recall": 0.7438
+    },
+    "noisy_metrics": {
+      "accuracy": 0.7117,
+      "auc": 0.7834,
+      "precision": 0.5301,
+      "recall": 0.7273
+    },
+    "performance_degradation": {
+      "delta_accuracy": 0.0208,
+      "delta_auc": 0.0197,
+      "delta_precision": 0.0254,
+      "delta_recall": 0.0165
+    }
+  },
+  "test_name": "label_noise_robustness"
+}

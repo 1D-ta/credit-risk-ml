@@ -1,92 +1,72 @@
 # Evidence Artifacts
 
-This directory contains real outputs from the credit risk ML system validation, demonstrating key production capabilities.
+This directory contains outputs captured from validation runs for the credit risk ML demo.
 
 ## Files
 
 ### 1. `drift_alert_rollback.log`
-**Demonstrates:** Automatic drift detection and rollback chain
+**Demonstrates:** Drift alerting and rollback triggered by PSI breach
 
-Shows PSI (Population Stability Index) computed per time batch, detecting severe drift (PSI=7.53 >> threshold=0.2), triggering automatic alert, marking model unhealthy, and executing rollback to last approved model without manual intervention.
+Snapshot of a monitoring run with `--auto-rollback` enabled. Shows PSI metric, temporal PSI batches, breach detection, and the active model pointer update.
 
 **Key Evidence:**
-- Temporal PSI monitoring (per-date batch)
-- Automatic alert on threshold breach
-- Automatic rollback execution
-- Production protection from degraded model
+- PSI monitoring output
+- Drift threshold breach detection
+- Rollback action recorded in logs
 
 ---
 
 ### 2. `temporal_training.log`
-**Demonstrates:** Strict temporal splits preventing data leakage
+**Demonstrates:** Temporal split creation and leakage check
 
-Shows training with T1/T2 temporal boundaries, explicit date ranges for train/val/test, and leakage validation ensuring `train_max < val_min < test_min`.
+Snapshot of the temporal split log written during training. Confirms non-overlapping train/validation/test ranges.
 
 **Key Evidence:**
-- Temporal split configuration (T1=2020-05-01, T2=2020-06-10)
-- No data leakage (dates strictly ordered)
-- Realistic time-based evaluation
-- Auditable split metadata
+- Time-ordered split boundaries
+- No leakage check passed
 
 ---
 
 ### 3. `inference_success.json`
-**Demonstrates:** Valid API response with all checks passed
+**Demonstrates:** Successful API response
 
-Shows successful prediction request with schema validation, feature consistency check, and drift check all passing. Returns risk score, decision, and metadata.
+Captured response payload from a real `/predict` call. Contains the risk score, decision, and request ID.
 
 **Key Evidence:**
-- Complete feature validation
-- Risk score and decision output
-- Low latency (12.4ms)
-- Structured response format
+- 200 response with score + decision
+- Model version reported in output
 
 ---
 
 ### 4. `inference_failure.json`
-**Demonstrates:** Schema validation rejection
+**Demonstrates:** Schema validation failure
 
-Shows request rejected due to missing required field (`credit_amount`). System enforces strict schema before model inference, preventing invalid predictions.
+Captured error response for a request missing `credit_amount`. This is a FastAPI/Pydantic validation error returned before inference.
 
 **Key Evidence:**
-- Pre-inference validation
-- Clear error messages
-- HTTP 422 (Unprocessable Entity)
-- Fail-fast behavior
+- 422 response
+- Field-level error details
 
 ---
 
 ### 5. `feature_mismatch.log`
 **Demonstrates:** Feature distribution mismatch detection
 
-Shows detection of 100x shift in `credit_amount` (cents vs euros), with detailed analysis of training baseline vs inference statistics. Request rejected with HTTP 503 to prevent silent model degradation.
+JSON output written by the feature consistency check when inference statistics deviate from training baselines.
 
 **Key Evidence:**
-- Feature consistency monitoring
-- Root cause analysis (unit mismatch)
-- Automatic rejection on distribution shift
-- Protection from data pipeline corruption
+- Mean-shift detection for `credit_amount`
+- Request rejection message emitted
 
 ---
 
 ## What This Proves
 
-✅ **Temporal Integrity:** No data leakage, realistic time-based splits  
-✅ **Automatic Monitoring:** PSI computed per time batch, alerts on drift  
-✅ **Automatic Rollback:** No manual intervention needed for model protection  
-✅ **Schema Enforcement:** Strict validation before inference  
-✅ **Feature Consistency:** Distribution monitoring catches pipeline issues  
-✅ **Production Safety:** Multiple layers of validation and automatic response
-
----
+- Temporal split logging is produced during training
+- Drift monitoring emits PSI metrics and can trigger rollback when enabled
+- Inference API returns both success and validation error responses
+- Feature consistency checks flag distribution shifts
 
 ## For Hiring Managers
 
-These artifacts demonstrate a production-grade ML system with:
-- **Temporal discipline** (no leakage)
-- **Automatic failure detection** (drift, schema, features)
-- **Automatic response** (rollback without manual intervention)
-- **Observable behavior** (structured logs, clear error messages)
-- **Safety-first design** (fail-fast, reject bad data, protect production)
-
-Review time: <60 seconds to understand the system's key capabilities.
+These artifacts show a governed ML workflow with temporal discipline, drift checks, schema enforcement, and fail-fast protections. Each artifact is a snapshot of actual script output from this repo.

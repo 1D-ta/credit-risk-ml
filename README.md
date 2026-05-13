@@ -1,419 +1,177 @@
-# Credit Risk ML
+# Credit Risk ML System
 
-**Production-grade credit risk scoring system demonstrating temporal training, automatic drift detection, and zero-downtime rollback.**
+A batch credit risk scoring system demonstrating ML engineering practices including temporal splits, model calibration, schema validation, drift detection, approval gating, and automated rollback.
 
-This system protects production from model degradation through strict schema validation, temporal data splits (no leakage), feature consistency monitoring, and automatic rollback when drift is detected. Built for hiring managers to review in <60 seconds.
+## ⚠️ Project Scope
 
-**Key Capabilities:** Temporal integrity • Automatic monitoring • Auto-rollback • Schema enforcement • Observable failures
+**This is a demonstration project showcasing ML engineering practices for technical interviews.**
 
----
-
-## What This Project Demonstrates
-
-This is a **complete, runnable example** of a production ML system focused on **reliability and auditability** rather than pure accuracy. It illustrates:
-
-- **Schema validation & data contracts**: Reject requests that don't match the training data schema
-- **Deterministic, auditable training**: Temporal train/val/test splits recorded in artifacts for reproducibility
-- **Model calibration**: Ensure predicted probabilities match observed rates for business decision-making
-- **Governance**: Approval gates that enforce minimum quality standards before promotion
-- **Automated rollback**: Detect data drift and performance degradation; restore the last known-good model
-- **Monitoring & observability**: Compare training vs. inference data; alert on metric mismatches
-- **Failure injection**: Test resilience with intentional schema mismatches, numeric drift, and categorical surprises
-
-Use this as a template for building **safe, governed, observable ML systems** in production.
-
----
+- **Data:** Public German Credit dataset with synthetic timestamps
+- **Scale:** Single-node local execution (batch processing)
+- **Monitoring:** Simulated drift detection patterns
+- **Deployment:** Local Docker Compose (not cloud infrastructure)
 
 ## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    TRAINING PIPELINE                        │
-├─────────────────────────────────────────────────────────────┤
-│  data/raw/                                                  │
-│  german_credit_with_ts.txt                                  │
-│         │                                                   │
-│         ▼                                                   │
-│  ┌──────────────────┐      ┌──────────────────┐             │
-│  │ Schema Validation│─────▶│  Temporal Split  │             │
-│  │ (data_contract.py)     │  (train/val/test)│             │
-│  └──────────────────┘      └──────────────────┘             │
-│         │                            │                       │
-│         ▼                            ▼                       │
-│  ┌──────────────────┐      ┌──────────────────┐             │
-│  │  Feature Eng.    │─────▶│   Train Model    │             │
-│  │ (normalize/scale)      │  (gradient boost)│             │
-│  └──────────────────┘      └──────────────────┘             │
-│                                    │                         │
-│                                    ▼                         │
-│                          ┌──────────────────┐               │
-│                          │   Calibration    │               │
-│                          │  (Platt scaling) │               │
-│                          └──────────────────┘               │
-│                                    │                         │
-│                                    ▼                         │
-│                          ┌──────────────────┐               │
-│                          │  Approval Gate   │               │
-│                          │ (policy.json)    │               │
-│                          └──────────────────┘               │
-│                                    │                         │
-│                     ┌──────────────┴──────────────┐         │
-│                     ▼                             ▼         │
-│              ✅ APPROVED         ❌ REJECTED       │
-│              └─────────────────────────────────────┘        │
-└─────────────────────────────────────────────────────────────┘
-           │
-           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  INFERENCE & MONITORING                     │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Active Model Pointer                                       │
-│  artifacts/models/active_model.json                        │
-│         │                                                   │
-│         ▼                                                   │
-│  ┌──────────────────┐      ┌──────────────────┐             │
-│  │ FastAPI Service  │────▶ │ Schema Validation│             │
-│  │ (inference/app.py)     │ (feature_check.py)             │
-│  └──────────────────┘      └──────────────────┘             │
-│         │                            │                       │
-│         │                    ┌───────┴────────┐             │
-│         │                    ▼                ▼             │
-│         │             ✅ Request OK    ❌ Rejected         │
-│         │                    │                │             │
-│         ▼                    ▼                ▼             │
-│  ┌──────────────────┐  ┌──────────────┐  ┌──────────┐     │
-│  │  Score & Return  │  │  Log Error   │  │ Alert    │     │
-│  │  Prediction      │  │  (error rate)│  │ on Drift │     │
-│  └──────────────────┘  └──────────────┘  └──────────┘     │
-│         │                                                   │
-│         ▼                                                   │
-│  ┌──────────────────┐                                       │
-│  │  Drift Detection │                                       │
-│  │  (monitoring/)   │                                       │
-│  │  Compare train   │                                       │
-│  │  vs inference    │                                       │
-│  │  feature stats   │                                       │
-│  └──────────────────┘                                       │
-│         │                                                   │
-│         ▼                                                   │
-│  ┌──────────────────┐                                       │
-│  │ High Error Rate? │                                       │
-│  │ Feature Drift?   │                                       │
-│  │ PSI > threshold? │                                       │
-│  └──────────────────┘                                       │
-│         │                                                   │
-│    ┌────┴────┐                                             │
-│    ▼         ▼                                             │
-│   YES       NO                                              │
-│    │         └─────────────────────┐                       │
-│    ▼                               ▼                       │
-│ ┌─────────────┐          ✅ Continue Serving              │
-│ │  ALERT      │                                            │
-│ │  Trigger    │                                            │
-│ │  Rollback   │                                            │
-│ │ (rollback.py)                                            │
-│ └─────────────┘                                            │
-│    │                                                       │
-│    ▼                                                       │
-│ ┌─────────────────────────────────┐                       │
-│ │ Restore Previous Approved Model │                       │
-│ │ Resume Service with Known-Good  │                       │
-│ └─────────────────────────────────┘                       │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
+**Component breakdown with brief descriptions:**
 
-**Key design principle**: Model promotion is strict (requires approval), but rollback is automatic and fast. This prevents silent degradation.
+- **Data Ingestion:** Schema validation with hard failures, temporal ordering verification
+- **Training Pipeline:** Temporal splits with leakage prevention, model calibration, comprehensive evaluation
+- **Model Registry:** Approval gating based on policy thresholds, version control with metadata
+- **Inference Service:** FastAPI with request validation and structured logging
+- **Monitoring:** PSI-based drift detection with automated alerting
+- **Governance:** Rollback capabilities with model registry integration
 
----
+## What Is Actually Implemented
+
+- ✅ Schema validation with hard failures on mismatch
+- ✅ Temporal split with leakage prevention (train/val/test)
+- ✅ Model calibration (Isotonic regression)
+- ✅ Approval gating based on policy thresholds (ROC-AUC, calibration)
+- ✅ PSI-based drift detection with configurable thresholds
+- ✅ Automated rollback on drift detection
+- ✅ Failure injection testing (schema, numeric shift, categorical)
+- ✅ Comprehensive test suite (13 tests, 100% pass rate)
+- ✅ Structured JSON logging with deterministic input hashing
+- ✅ Feature parity validation between training and inference
 
 ## Quick Start
 
-**3 commands to see the system in action:**
-
 ```bash
-# 1. Setup environment
-python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+# Setup
+make setup
+source .venv/bin/activate
 
-# 2. Train model with temporal splits
-make train
+# Generate temporal data
+make generate-temporal
 
-# 3. Run inference service
-docker compose up --build
-```
-
-**See proof artifacts:** Check `artifacts/evidence/` for real validation outputs showing drift detection, rollback, temporal training, and failure cases.
-
----
-
-## Project Structure
-
-```
-credit-risk-ml/
-├── credit_risk_ml/          # Core business logic
-│   ├── data_contract.py    # Schema validation
-│   └── modeling.py         # Feature engineering & model training
-│
-├── training/               # Model training pipeline
-│   ├── train.py           # Train XGBoost model
-│   ├── evaluate.py        # Compute metrics (ROC-AUC, calibration error)
-│   ├── calibration.py     # Apply Platt scaling for probability calibration
-│
-├── inference/              # FastAPI inference service
-│   ├── app.py             # REST API for scoring
-│   └── schema.py          # Request/response schemas
-│
-├── monitoring/             # Drift detection & observability
-│   ├── drift.py           # Compute PSI & compare feature distributions
-│   ├── feature_check.py   # Real-time feature validation
-│   ├── metrics.py         # Prometheus metrics exporter
-│   ├── prometheus.yml     # Prometheus config
-│   └── grafana_dashboard.json # Grafana visualization
-│
-├── governance/             # Approval & rollback automation
-│   ├── approve_model.py   # Promote candidate to active model
-│   ├── rollback.py        # Restore previous approved model
-│   └── policy.json        # Governance thresholds (ROC-AUC min, calibration gap max)
-│
-├── scripts/
-│   ├── generate_temporal_data.py          # Add timestamps to raw data
-│   ├── failure_injection/                 # Intentional data corruption for testing
-│   │   ├── inject_schema_mismatch.py
-│   │   ├── inject_shifted_numeric.py
-│   │   └── inject_unexpected_categorical.py
-│   └── demo_requests.py   # Example inference requests
-│
-├── data/
-│   ├── raw/               # Public German Credit dataset (UCI)
-│   │   ├── german_credit_raw.txt
-│   │   └── german_credit_with_ts.txt  # Raw + synthetic timestamps
-│   ├── schemas/           # Data contracts
-│   │   └── schema.json
-│   └── failure_cases/     # Test data with intentional issues
-│
-├── artifacts/             # Outputs (example artifacts tracked, runtime artifacts ignored)
-│   ├── models/            # Trained models
-│   │   ├── approved/      # Approved models (git-ignored)
-│   │   ├── candidate/     # Candidate models (git-ignored)
-│   │   └── active_model.json  # Pointer to active model
-│   ├── reports/           # Metrics and reports (example artifacts tracked)
-│   │   ├── metrics.json   # Training metrics
-│   │   ├── calibration_report.json
-│   │   ├── data_validation_report.json
-│   │   └── split_indices.json
-│   ├── feature_stats/     # Feature statistics (example artifacts tracked)
-│   │   ├── training_features.json
-│   │   └── inference_features.json
-│   ├── evidence/          # Proof artifacts from validation runs
-│   │   ├── drift_alert_rollback.log
-│   │   ├── temporal_training.log
-│   │   ├── inference_success.json
-│   │   ├── inference_failure.json
-│   │   ├── feature_mismatch.log
-│   │   └── README.md
-│   ├── logs/              # Runtime logs (git-ignored, grows unbounded)
-│   │   └── predictions.jsonl
-│   └── monitoring/        # Monitoring alerts (example artifacts tracked)
-│       └── alert_example.json
-│
-├── docker/                # Container configs
-│   ├── training.Dockerfile
-│   ├── inference.Dockerfile
-│   └── monitoring.Dockerfile
-│
-├── tests/                 # Unit tests
-│   ├── test_schema_validation.py
-│   ├── test_drift_detection.py
-│   ├── test_inference_validation.py
-│   └── test_approval_rollback.py
-│
-├── Makefile               # Workflow automation
-├── docker-compose.yml     # Local development orchestration
-├── requirements.txt       # Python dependencies
-├── INCIDENT.md            # Demo incident + rollback story
-└── README.md              # This file
-```
-
-### Artifacts
-
-**Example artifacts (tracked in git for reference)**:
-- [artifacts/reports/metrics.json](artifacts/reports/metrics.json) — Training metrics baseline
-- [artifacts/reports/calibration_report.json](artifacts/reports/calibration_report.json) — Calibration quality
-- [artifacts/feature_stats/training_features.json](artifacts/feature_stats/training_features.json) — Training data statistics
-- [artifacts/monitoring/alert_example.json](artifacts/monitoring/alert_example.json) — Example drift alert
-
-**Runtime artifacts (git-ignored)**:
-- `artifacts/logs/` — Prediction logs (rotate and archive to S3 in production)
-- `artifacts/models/*.pkl` — Binary model files (use git-lfs for version control if needed)
-- `artifacts/reports/split_indices.json` — Training split metadata
-
-## What is implemented
-- Raw German Credit data in `data/raw/`
-- Schema contract in `data/schemas/schema.json`
-- Training, evaluation, calibration, approval, rollback, inference, and drift monitoring
-- Dockerfiles in `docker/` and orchestration in `docker-compose.yml`
-- Failure-injection scripts in `scripts/failure_injection/`
-- Unit tests in `tests/`
-
-## How to Verify Everything Works
-
-### 1. **Test the training pipeline** (generates artifacts and metrics)
-```bash
-make train
-```
-**Expected output**: Trained model file and metrics report in `artifacts/reports/metrics.json`. Compare with tracked baseline.
-
-### 2. **Run unit tests** (validates schema, drift detection, inference)
-```bash
-pytest tests/ -q
-```
-**Expected output**: All tests pass (✓). If any fail, check that relative paths (`data/`, `artifacts/`) are correct.
-
-### 3. **Test approval & rollback** (governance automation)
-```bash
-make calibrate  # Generate calibrated candidate
-make approve    # Check against policy.json thresholds
-make rollback   # Restore previous approved model
-```
-**Expected output**: Active model pointer updated in `artifacts/models/active_model.json`.
-
-### 4. **Run inference service + monitoring** (full system)
-```bash
-docker compose up --build
-```
-This starts:
-- **Inference API** (http://localhost:8000) — Score applicants
-- **Prometheus** (http://localhost:9090) — Metrics collection
-- **Grafana** (http://localhost:3000) — Dashboards
-
-**Test**: Send a sample request:
-```bash
-curl -X POST http://localhost:8000/score \
-  -H "Content-Type: application/json" \
-  -d '{"checking_account_status": "A11", "credit_history": "A34", "credit_amount": 1000, "duration_months": 12, "purpose": "A40", "savings_account_status": "A61", "employment_years": 4, "installment_rate": 4, "personal_status": "A93", "debtors_guarantors": 1, "residence_years": 2, "age": 40, "concurrent_credit": "A192", "job": "A174", "dependents": 1, "telephone": "A192", "foreign_worker": "A201"}' 
-```
-
-**Expected output**: HTTP 200 with predicted probability.
-
-## Full Workflow (Makefile)
-Run these from the repository root:
-
-```bash
-make train      # Train model
-make evaluate   # Compute metrics
-make calibrate  # Apply calibration
-make approve    # Check governance policy & promote
-make rollback   # Restore previous approved model (if needed)
-```
-
-## Verified workflow
-Run these from the repository root:
-
-```bash
+# Run training pipeline
 make train
 make evaluate
 make calibrate
-make approve
-make rollback
-docker compose up --build
+
+# Approve model
+python governance/approve_model.py
+
+# Start inference service
+uvicorn inference.app:app --host 0.0.0.0 --port 8000
+
+# Run tests
+make test
 ```
 
-The governance policy in `governance/policy.json` requires an approved model to meet the metrics threshold. A rejected candidate does not clear or null the active pointer; the last approved model remains in `artifacts/models/active_model.json`.
+## Failure Modes Tested
 
-## Failure injection
-Schema mismatch:
+- **Schema mismatch** → Hard failure with ValueError, request rejected before inference
+- **Missing required field** → 422 validation error with clear message
+- **Feature drift (PSI > 0.2)** → Alert triggered + automatic rollback to previous approved model
+- **Invalid categorical value** → 422 validation error, request rejected
+- **Numeric shift** → Monitoring alert, PSI calculation flags distribution change
+- **Label noise** → Measurable AUC degradation tracked in robustness script
+- **Bad model promotion** → Approval gate prevents update, active model unchanged
+- **Active model regression** → Rollback script resets active pointer to last approved version
 
-```bash
-python scripts/failure_injection/inject_schema_mismatch.py \
-	--src data/raw/german_credit_raw.txt \
-	--out data/failure_cases/schema_mismatch.txt
+## Sample Outputs
+
+**Model Performance (`artifacts/reports/metrics.json`):**
+```json
+{
+  "roc_auc": 0.8196,
+  "approval_rate": 0.0867,
+  "decision_threshold": 0.3
+}
 ```
 
-Numeric drift:
-
-```bash
-python scripts/failure_injection/inject_shifted_numeric.py \
-	--src data/raw/german_credit_raw.txt \
-	--out data/failure_cases/shifted.txt \
-	--offset 5.0
-python monitoring/drift.py \
-	--reference-data data/raw/german_credit_raw.txt \
-	--current-data data/failure_cases/shifted.txt \
-	--schema data/schemas/schema.json
+**Calibration Improvement (`artifacts/reports/calibration_report.json`):**
+```json
+{
+  "brier_score_before": 0.2074,
+  "brier_score_after": 0.1327,
+  "calibration_gap_after": 1.11e-16,
+  "method": "isotonic_regression"
+}
 ```
 
-## Rollback story
-If a candidate is rejected or a bad promotion is discovered, restore the last approved model with:
-
-```bash
-make rollback
+**Drift Detection (`artifacts/reports/drift_report.json`):**
+```json
+{
+  "alert": true,
+  "psi_threshold": 0.2,
+  "feature_reports": {
+    "credit_amount": {
+      "psi": 0.3111,
+      "ks": 0.215
+    }
+  }
+}
 ```
 
-The active pointer is designed to remain on the last approved artifact until a better candidate is successfully promoted.
+## Repository Structure
 
-## Testing
-```bash
-pytest tests/ -q
+```
+credit-risk-ml/
+├── training/          # Model training, evaluation, and calibration
+├── inference/         # FastAPI service with validation
+├── monitoring/        # Drift detection and alerting
+├── governance/        # Approval and rollback scripts
+├── credit_risk_ml/    # Core data contracts and utilities
+├── tests/            # Test suite (13 tests)
+├── artifacts/        # Execution evidence and model artifacts
+├── data/             # Raw data, schemas, and failure cases
+└── scripts/          # Reproducibility and failure injection
 ```
 
-## Artifacts
-- Trained model: `artifacts/models/model_v1.pkl`
-- Calibrated candidate: `artifacts/models/calibrated_model_v1.pkl`
-- Approved model: `artifacts/models/approved/calibrated_model_v1.pkl`
-- Active model pointer: `artifacts/models/active_model.json`
-- Metrics: `artifacts/reports/metrics.json`
-- Calibration report: `artifacts/reports/calibration_report.json`
-- Drift report: `artifacts/reports/drift_report.json`
+## Design Decisions
 
-## Temporal Validation
+**Why Logistic Regression + XGBoost:**
+- Logistic regression provides interpretable baseline
+- XGBoost offers ensemble comparison
+- Both are fast to train on tabular data
+- Suitable for credit risk where interpretability matters
 
-- Raw records include `event_time` (YYYY-MM-DD). Data generation simulates daily batches, missing days, and late rows (out-of-order event times). See `scripts/generate_temporal_data.py` output and `artifacts/reports/temporal_data_manifest.json`.
-- Split logic is hard-coded to prevent leakage: train uses `t < T`, validation uses `t = T`, and test uses `t > T`.
-- The split is auditable in two places:
-	- `artifacts/reports/split_indices.json` stores explicit date ranges and row counts.
-	- `artifacts/logs/temporal_split.log` records train/validation/test ranges and `NO_LEAKAGE_CHECK=passed`.
-- Monitoring reports drift over time, not just one value. `monitoring/drift.py` writes per-day PSI trend entries (`TEMPORAL_PSI: event_time=...`) and stores `temporal_psi_trend` in `artifacts/reports/drift_report.json`.
+**Why Calibration:**
+- Credit risk decisions depend on probability accuracy, not just ranking
+- Isotonic regression improves Brier score by 36%
+- Calibration gap reduced to near-zero (1.11e-16)
 
-## Failure Detection Flow
+**Why Governance Layer:**
+- Demonstrates approval workflows common in regulated environments
+- Separates model quality checks from deployment
+- Enables safe rollback without code changes
 
-One run can show the full loop end-to-end:
+**Why Temporal Splits:**
+- Prevents data leakage in time-series scenarios
+- Validates model performance on future data
+- Enforces train_max < val_min < test_min ordering
 
-1. Metric: `monitoring/drift.py` computes PSI and logs `METRIC: psi=... threshold=...`.
-2. Breach: if PSI is above threshold (default `0.2`), it logs `BREACH: ...`.
-3. Alert: it logs `ALERT: drift threshold breached` and writes `artifacts/monitoring/alert_example.json`.
-4. Action: with `--auto-rollback`, the same run executes rollback and logs `ACTION: rollback_executed ...`.
+## Limitations
 
-Evidence is appended to `artifacts/logs/monitoring_alerts.log`, so auditors can trace metric -> breach -> alert -> rollback in order.
+**Be explicit and honest:**
 
-## Failure Response Flow
+- **Single-node execution** - Not distributed (no Spark/Dask)
+- **Batch processing only** - Not real-time streaming
+- **Simulated monitoring** - Not production monitoring stack (Datadog, Prometheus in production)
+- **No authentication** - No security hardening or access controls
+- **Synthetic timestamps** - Public dataset with generated temporal ordering
+- **No disaster recovery** - No backup/restore or high availability
+- **Local Docker Compose** - Not Kubernetes or cloud-managed services
+- **No feature store** - No centralized feature management
+- **No A/B testing** - No canary deployments or gradual rollouts
+- **No compliance documentation** - No model risk management artifacts
 
-The system implements automatic failure detection and response:
+## Validation Results
 
-**Drift Detection → Alert → Rollback**
+- ✅ 13/13 tests passing (100% pass rate)
+- ✅ Complete pipeline execution verified
+- ✅ All workflows operational (train, evaluate, calibrate, approve, rollback)
+- ✅ Failure injection scenarios validated
+- ✅ Drift detection and alerting functional
 
-1. **Drift Detected**: PSI computed per time batch; threshold = 0.2
-2. **Alert Triggered**: Automatic alert when PSI > 0.2
-3. **Model Marked Unhealthy**: Current model flagged as unhealthy
-4. **Automatic Rollback**: System rolls back to last approved model
+See [`VALIDATION.md`](VALIDATION.md) for detailed validation report.
 
-**Log Sequence:**
-```
-DATE=2023-03-10 PSI=0.25
-ALERT: PSI breach - value=0.2500, threshold=0.2000
-MODEL marked unhealthy due to PSI=0.2500
-ROLLBACK triggered automatically
-ROLLBACK executed → model_v1 active
-```
+## Documentation
 
-No manual intervention required - the system automatically protects production from degraded models.
-
-## Risk Tradeoffs
-
-Rejecting a good borrower has a real cost: we lose interest income, relationship value, and future cross-sell potential. Approving a bad borrower is usually more expensive: direct credit loss, collection effort, and capital impact. In most retail lending books, the bad approval mistake is more costly, so this system uses a conservative decision threshold of `0.30` for bad-risk probability.
-
-That threshold is not arbitrary. It is chosen to limit severe loss cases while keeping enough approvals to meet business volume goals. If we set it too low, we reject too many good customers. If we set it too high, charge-offs rise. Teams can tune it, but every change should be tied to expected portfolio cost.
-
-Calibration is required because business teams act on probabilities, not raw model scores. If a model says `0.30`, risk expects that to mean roughly 30 out of 100 similar applicants may default. Without calibration, threshold decisions become unstable and hard to defend.
-
-Rollback is safer than retraining during drift because drift often means current data is unreliable. Rolling back returns us to a known-good model immediately, while retraining on unstable data can lock in the failure.
+- [`SETUP.md`](SETUP.md) - Installation and setup instructions
+- [`VALIDATION.md`](VALIDATION.md) - End-to-end system validation report
+- [`INCIDENT.md`](INCIDENT.md) - Simulated incident scenario (schema drift)
+- [`artifacts/ARTIFACTS.md`](artifacts/ARTIFACTS.md) - Execution evidence and artifact descriptions

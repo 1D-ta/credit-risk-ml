@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-API_URL="${1:-http://127.0.0.1:8000/predict}"
+API_URL="${1:-http://localhost:8000/predict}"
 
-cat >/tmp/credit_risk_sample_payload.json <<'JSON'
+# Use TMPDIR if set, otherwise fall back to /tmp (works on Unix-like systems)
+TMPDIR="${TMPDIR:-/tmp}"
+PAYLOAD_FILE="${TMPDIR}/credit_risk_sample_payload.json"
+RESPONSE_FILE="${TMPDIR}/credit_risk_sample_response.json"
+
+cat >"${PAYLOAD_FILE}" <<'JSON'
 {
   "checking_account_status": "A11",
   "duration_months": 12,
@@ -28,11 +33,14 @@ cat >/tmp/credit_risk_sample_payload.json <<'JSON'
 }
 JSON
 
-HTTP_CODE=$(curl -s -o /tmp/credit_risk_sample_response.json -w "%{http_code}" \
+HTTP_CODE=$(curl -s -o "${RESPONSE_FILE}" -w "%{http_code}" \
   -X POST "$API_URL" \
   -H "Content-Type: application/json" \
-  --data-binary @/tmp/credit_risk_sample_payload.json)
+  --data-binary @"${PAYLOAD_FILE}")
 
 echo "HTTP $HTTP_CODE"
-cat /tmp/credit_risk_sample_response.json
+cat "${RESPONSE_FILE}"
 echo
+
+# Clean up temporary files
+rm -f "${PAYLOAD_FILE}" "${RESPONSE_FILE}"

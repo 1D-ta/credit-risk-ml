@@ -10,17 +10,17 @@ PURPOSE (Interview):
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
 
 def compute_business_metrics(
-    predictions: list[dict[str, Any]] | None = None,
-    log_file: Path | None = None,
+    predictions: Optional[List[Dict[str, Any]]] = None,
+    log_file: Optional[Path] = None,
     default_loss_per_default: float = 1000.0,
     default_processing_cost: float = 50.0,
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """
     Compute business metrics from predictions or log file.
     
@@ -103,6 +103,7 @@ def compute_business_metrics(
             "max": round(float(pred_stats.get("max", 0)), 4),
             "p25": round(float(df["prediction"].quantile(0.25)), 4),
             "p50": round(float(df["prediction"].quantile(0.50)), 4),
+            "p95": round(float(df["prediction"].quantile(0.95)), 4),
             "p75": round(float(df["prediction"].quantile(0.75)), 4),
         },
         "financial_impact": {
@@ -125,7 +126,7 @@ def compute_business_metrics(
 
 def generate_business_metrics_report(
     log_file: Path,
-    output_file: Path | None = None,
+    output_file: Optional[Path] = None,
 ) -> str:
     """
     Generate markdown report of business metrics.
@@ -162,7 +163,7 @@ def generate_business_metrics_report(
 - **Min:** {metrics['prediction_distribution']['min']}
 - **Max:** {metrics['prediction_distribution']['max']}
 - **Median (p50):** {metrics['prediction_distribution']['p50']}
-- **p95:** {metrics['prediction_distribution']['p75']}
+- **p95:** {metrics['prediction_distribution']['p95']}
 
 ## Financial Impact (Estimated)
 

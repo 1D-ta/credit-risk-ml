@@ -1,33 +1,110 @@
-# INCIDENT: Schema drift caused inference failures and model rollback
+# Simulated Incident Scenario: Schema Drift Response
 
-Date: 2026-05-12
+**Purpose:** This document demonstrates how the system would respond to a schema drift incident in a production environment. This is a simulated scenario for technical discussion, not an actual incident report.
 
-Summary
-- During routine operation a spike in inference errors and feature mismatch was observed causing 30% of incoming requests to be rejected. The system automatically flagged the issue and the most recent approved model was rolled back to the previous version.
+---
 
-What failed
-- Real-time inference endpoint started rejecting requests with HTTP 503 due to feature mismatch checks. The failure rate rose to ~30% of requests.
+## Scenario Overview
 
-How it was detected
-- Monitoring alerted on increased inference error rate (metric `inference_request_errors_total` / `inference_requests_total`) and `feature_mismatch` entries in logs. A downstream check of `artifacts/feature_stats/inference_features.json` showed large mean shifts versus `artifacts/feature_stats/training_features.json` (PSI > 0.25 on `credit_amount` and `duration_months`).
+This simulation demonstrates the system's response to a common production failure mode: upstream data format changes causing inference failures.
 
-Business impact
-- ~30% of loan applications could not be scored, causing manual queueing of applications. Estimated operational cost: ~10-20 hours of manual review per day and delayed revenue from loan originations.
+---
 
-Why it happened
-- A client-side change in the ingestion pipeline started sending `credit_amount` values in cents instead of whole euros, increasing the numeric mean by ~100x. Our feature-check compared training vs inference means and rejected requests when deviation exceeded thresholds.
+## Simulated Failure
 
-How rollback was triggered
-- Governance automation detects sustained high error rate or feature mismatch alerts and marks the active model as unhealthy. An automated rollback script (governance/rollback.py) was invoked to point `artifacts/models/active_model.json` to the previously approved model, restoring service quickly.
+**What Would Fail:**
+- Real-time inference endpoint would start rejecting requests with HTTP 422 validation errors due to feature schema mismatches
+- Monitoring would detect increased error rates and feature distribution shifts
 
-What was fixed to prevent recurrence
-- Short-term: temporarily relaxed the feature-check threshold for `credit_amount` and added a conversion step in ingestion to normalize units.
-- Medium-term: added a lightweight schema contract test at ingestion to assert units for sensitive numeric fields and an example client validation in the README.
-- Long-term: plan to add unit tests in CI that validate the production ingestion format and add a small adapter layer to enforce expected units.
+**Detection Mechanism:**
+- Monitoring alerts on increased inference error rate (metric `inference_request_errors_total` / `inference_requests_total`)
+- `feature_mismatch` entries appear in logs
+- Comparison of `artifacts/feature_stats/inference_features.json` vs `artifacts/feature_stats/training_features.json` shows large mean shifts
+- PSI calculation exceeds threshold (> 0.2) on key features like `credit_amount` and `duration_months`
 
-Detection artifacts
-- See `artifacts/logs/feature_mismatch.log` and `artifacts/monitoring/alert_example.json` for recorded evidence.
+---
 
-Lessons learned
-- Automatic rejection is valuable for protecting model performance, but must be paired with clear on-call runbooks and a safe rollback path. The system succeeded in preventing silent model degradation and enabled quick remediation.
+## Root Cause (Simulated)
 
+**Scenario:** A client-side change in the ingestion pipeline starts sending `credit_amount` values in cents instead of whole euros, increasing the numeric mean by ~100x.
+
+**Why This Matters:**
+- Feature validation compares training vs inference distributions
+- Large deviations trigger rejection to prevent model degradation
+- System correctly identifies data quality issue before making predictions
+
+---
+
+## Automated Response
+
+**Rollback Trigger:**
+- Governance automation detects sustained high error rate or feature mismatch alerts
+- Active model marked as unhealthy
+- Automated rollback script (`governance/rollback.py`) invoked
+- `artifacts/models/active_model.json` pointer updated to previously approved model
+- Service restored quickly without manual intervention
+
+---
+
+## What This Demonstrates
+
+### 1. Defensive Design
+- Schema validation prevents silent model degradation
+- System fails fast with clear error messages
+- No incorrect predictions served on bad data
+
+### 2. Monitoring Capabilities
+- PSI-based drift detection
+- Feature distribution comparison
+- Alert generation on threshold breaches
+
+### 3. Governance Controls
+- Automated rollback on detection
+- Model registry maintains approved versions
+- Quick recovery path without manual intervention
+
+### 4. Operational Patterns
+- Clear error logging for debugging
+- Artifact-based evidence trail
+- Separation of detection and remediation
+
+---
+
+## Remediation Steps (Demonstration)
+
+**Short-term:**
+- Rollback to previous approved model (automated)
+- Identify root cause from logs and feature statistics
+- Add data validation at ingestion point
+
+**Medium-term:**
+- Implement unit conversion in ingestion pipeline
+- Add schema contract tests
+- Update client validation examples
+
+**Long-term:**
+- Add CI tests validating production data format
+- Implement adapter layer for unit normalization
+- Enhance monitoring with unit-aware checks
+
+---
+
+## Evidence Artifacts
+
+The following artifacts demonstrate the detection and response:
+
+- `artifacts/logs/feature_mismatch.log` - Feature validation failures
+- `artifacts/monitoring/alert_example.json` - Alert payload example
+- `artifacts/reports/drift_report.json` - PSI calculations showing drift
+- `artifacts/feature_stats/` - Training vs inference feature distributions
+
+---
+
+## Key Takeaways
+
+1. **Automatic rejection protects model quality** - Better to reject requests than serve incorrect predictions
+2. **Monitoring enables fast detection** - PSI and feature checks catch issues quickly
+3. **Rollback provides safe recovery** - Automated remediation reduces downtime
+4. **Clear logging aids debugging** - Artifact trail makes root cause analysis straightforward
+
+This scenario demonstrates production-ready patterns for handling data quality issues in ML systems, even though this specific implementation runs locally for demonstration purposes.

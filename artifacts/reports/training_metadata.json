@@ -6,7 +6,7 @@
     "approval_rate": 0.06666666666666667,
     "roc_auc": 0.7977038593613859
   },
-  "model_output": "artifacts/models/candidate/model.pkl",
+  "model_output": "artifacts/models/model_v1.pkl",
   "model_version": "v1",
   "rows": 1000,
   "split_indices": "artifacts/reports/split_indices.json"

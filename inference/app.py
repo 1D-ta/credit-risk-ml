@@ -11,7 +11,7 @@ import time
 import uuid
 import logging
 
-from prometheus_client import Counter, Histogram, start_http_server
+from prometheus_client import Counter, Histogram, REGISTRY, generate_latest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -26,7 +26,7 @@ from inference.logging_config import create_inference_log_entry, write_log_entry
 
 app = FastAPI(title="Credit Risk Scoring API", version="1.0.0")
 
-# Prometheus metrics (exported on port 8001)
+# Prometheus metrics
 # PURPOSE (Interview):
 # - REQUEST_COUNT: traffic volume and burst detection
 # - REQUEST_LATENCY: SLA monitoring and bottleneck detection
@@ -58,8 +58,6 @@ DECISION_BUCKET = Counter(
     "Count of decisions by type",
     ["decision"]
 )
-
-start_http_server(8001)  # /metrics endpoint on port 8001
 
 # simple in-memory rate limiter: max requests per minute per client
 _RATE_LIMIT = {"window_seconds": 60, "max_per_window": 60, "clients": {}}
@@ -101,7 +99,6 @@ def health() -> dict[str, str]:
 @app.get("/metrics")
 def metrics_endpoint() -> str:
     """Prometheus metrics endpoint for monitoring."""
-    from prometheus_client import generate_latest, CollectorRegistry, REGISTRY
     return generate_latest(REGISTRY).decode("utf-8")
 
 

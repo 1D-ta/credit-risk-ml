@@ -1,8 +1,20 @@
+# Web framework and API
 fastapi>=0.115,<1.0
 uvicorn[standard]>=0.30,<1.0
+
+# Data processing and ML
 numpy>=1.26,<3.0
 pandas>=2.2,<3.0
 scikit-learn>=1.5,<2.0
+
+# Data validation
 pydantic>=2.8,<3.0
+
+# Monitoring and metrics
 prometheus_client>=0.16.0
+
+# Testing
 pytest>=8.0,<9.0
+
+# HTTP client for demo scripts
+requests>=2.31.0,<3.0

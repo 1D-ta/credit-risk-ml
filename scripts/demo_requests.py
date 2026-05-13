@@ -1,9 +1,16 @@
+import os
+from pathlib import Path
+
 import requests
 
-URL = "http://127.0.0.1:8000/predict"
+# Get project root (2 levels up from scripts/)
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+URL = os.environ.get("API_URL", "http://localhost:8000/predict")
 
 # build a payload from the first line of the timestamped data
-with open("data/raw/german_credit_with_ts.txt", "r") as f:
+data_file = PROJECT_ROOT / "data" / "raw" / "german_credit_with_ts.txt"
+with open(data_file, "r") as f:
     first = f.readline().strip().split()
 
 # schema: timestamp + original tokens

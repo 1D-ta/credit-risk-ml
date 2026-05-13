@@ -1,36 +1,7 @@
-# Temporal Training Log - Demonstrating No Data Leakage
-# Generated from actual training run with strict temporal splits
+# Temporal Split Log (sample)
+# Snapshot from training split output
 
-=== TEMPORAL SPLIT CONFIGURATION ===
-T1 (train/val boundary): 2020-05-01
-T2 (val/test boundary): 2020-06-10
-
-=== DATA RANGES ===
-TRAIN_RANGE: 2020-01-01 to 2020-04-30
-VAL_RANGE: 2020-05-01 to 2020-06-09
-TEST_RANGE: 2020-06-10 to 2020-07-18
-
-=== SPLIT SIZES ===
-TEMPORAL_SPLIT: train t < T1 range=2020-01-01..2020-04-30 rows=804
-TEMPORAL_SPLIT: val T1 <= t < T2 range=2020-05-01..2020-06-09 rows=5
-TEMPORAL_SPLIT: test t >= T2 range=2020-06-10..2020-07-18 rows=191
-
-=== LEAKAGE CHECK ===
-train_max_date: 2020-04-30
-val_min_date: 2020-05-01
-val_max_date: 2020-06-09
-test_min_date: 2020-06-10
-
+TEMPORAL_SPLIT: train t < T1 range=2020-01-01..2020-04-30 rows=615
+TEMPORAL_SPLIT: val T1 <= t < T2 range=2020-05-01..2020-06-09 rows=189
+TEMPORAL_SPLIT: test t >= T2 range=2020-06-10..2020-07-18 rows=196
 TEMPORAL_SPLIT: NO_LEAKAGE_CHECK=passed
-✓ train_max < val_min: 2020-04-30 < 2020-05-01
-✓ val_max < test_min: 2020-06-09 < 2020-06-10
-
-=== TRAINING RESULTS ===
-Model trained on 804 samples (2020-01-01 to 2020-04-30)
-Validated on 5 samples (2020-05-01 to 2020-06-09)
-Tested on 191 samples (2020-06-10 to 2020-07-18)
-
-ROC-AUC (test): 0.7845
-Calibration error: 0.0234
-Model version: v1
-Output: artifacts/models/approved/model.pkl
