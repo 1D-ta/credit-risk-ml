@@ -1,12 +1,5 @@
 """
 Structured JSON logging for inference: enables post-hoc debugging and auditability.
-
-PURPOSE (Interview):
-- Deterministic request hashing: identify duplicate requests
-- Audit trail: every prediction is logged with timestamp and model version
-- No raw sensitive data: hash input instead of storing PII
-- Enables label-lag handling: join with true labels later for retraining
-- Supports data drift analysis: compare inference features to training
 """
 
 import hashlib

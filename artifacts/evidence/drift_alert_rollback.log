@@ -5,4 +5,4 @@ DATE=2020-01-01 PSI=8.4658
 ALERT: PSI breach - value=8.4658, threshold=0.2
 MODEL marked unhealthy due to PSI=8.4658
 ROLLBACK triggered automatically
-ROLLBACK executed → artifacts/models/approved/calibrated_model_v1.pkl active
+ROLLBACK executed -> artifacts/models/approved/calibrated_model_v1.pkl active

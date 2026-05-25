@@ -11,9 +11,9 @@ def check_python_version():
     """Check Python version is 3.9+"""
     version = sys.version_info
     if version.major < 3 or (version.major == 3 and version.minor < 9):
-        print(f"❌ Python 3.9+ required, found {version.major}.{version.minor}")
+        print(f"ERROR: Python 3.9+ required, found {version.major}.{version.minor}")
         return False
-    print(f"✓ Python version: {version.major}.{version.minor}.{version.micro}")
+    print(f"OK: Python version: {version.major}.{version.minor}.{version.micro}")
     return True
 
 def check_imports():
@@ -34,9 +34,9 @@ def check_imports():
     for module_name, package_name in required_packages:
         try:
             __import__(module_name)
-            print(f"✓ {package_name} installed")
+            print(f"OK: {package_name} installed")
         except ImportError:
-            print(f"❌ {package_name} not installed")
+            print(f"ERROR: {package_name} not installed")
             all_ok = False
     
     return all_ok
@@ -65,9 +65,9 @@ def check_project_structure():
     for path_str in required_paths:
         path = project_root / path_str
         if path.exists():
-            print(f"✓ {path_str} exists")
+            print(f"OK: {path_str} exists")
         else:
-            print(f"❌ {path_str} missing")
+            print(f"ERROR: {path_str} missing")
             all_ok = False
     
     return all_ok
@@ -78,12 +78,12 @@ def check_data_files():
     
     data_file = project_root / "data" / "raw" / "german_credit_raw.txt"
     if data_file.exists():
-        print(f"✓ Raw data file exists")
+        print("OK: Raw data file exists")
         return True
     else:
-        print(f"⚠ Raw data file missing: {data_file}")
-        print(f"  This is expected if you haven't added the data yet.")
-        print(f"  Download from: https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data)")
+        print(f"WARNING: Raw data file missing: {data_file}")
+        print("  This is expected if you have not added the data yet.")
+        print("  Download from: https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data)")
         return True  # Not a critical error
 
 def main():
@@ -107,14 +107,14 @@ def main():
     
     print("\n" + "=" * 60)
     if all(results):
-        print("✓ All checks passed! Environment is ready.")
+        print("All checks passed. Environment is ready.")
         print("\nNext steps:")
         print("  1. Run 'make generate-temporal' to create timestamped data")
         print("  2. Run 'make train' to train the model")
         print("  3. Run 'make test' to verify everything works")
         return 0
     else:
-        print("❌ Some checks failed. Please fix the issues above.")
+        print("Some checks failed. Please fix the issues above.")
         print("\nTo install dependencies:")
         print("  make setup    # Create venv and install")
         print("  OR")

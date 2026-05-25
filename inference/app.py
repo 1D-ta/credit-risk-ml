@@ -26,13 +26,7 @@ from inference.logging_config import create_inference_log_entry, write_log_entry
 
 app = FastAPI(title="Credit Risk Scoring API", version="1.0.0")
 
-# Prometheus metrics
-# PURPOSE (Interview):
-# - REQUEST_COUNT: traffic volume and burst detection
-# - REQUEST_LATENCY: SLA monitoring and bottleneck detection
-# - PREDICTION_BUCKET: distribution of risk scores (model behavior)
-# - ERROR_COUNT: failure rate and error types
-# - DECISION_BUCKET: business metrics (approval rate)
+# Prometheus metrics used for traffic, latency, prediction distribution, and error tracking.
 REQUEST_COUNT = Counter(
     "inference_requests_total",
     "Total inference requests",
@@ -176,11 +170,7 @@ async def predict(request: Request, payload: CreditRiskRequest) -> dict[str, obj
             logger.info(json.dumps({"request_id": request_id, "event": "timeout"}))
             raise HTTPException(status_code=504, detail="prediction timed out")
 
-        # Business decision layer: three-tier decisioning
-        # PURPOSE (Interview):
-        # - Low risk (p<0.3): Approve automatically
-        # - Medium risk (0.3≤p≤0.7): Flag for manual review (fraud signal, model uncertainty)
-        # - High risk (p>0.7): Reject automatically (cost of default > processing cost)
+        # Business decision layer: three-tier decisioning.
         if probability < 0.3:
             decision = "approve"
         elif probability <= 0.7:

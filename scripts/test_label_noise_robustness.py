@@ -132,7 +132,7 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True))
     
-    print(f"\n✓ Report saved to {args.output}")
+    print(f"\nReport saved to {args.output}")
     return 0
 
 
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     try:
         sys.exit(main())
     except Exception as e:
-        print(f"✗ Error: {e}")
+        print(f"Error: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

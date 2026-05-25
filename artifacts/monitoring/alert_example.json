@@ -1,8 +1,0 @@
-{
-  "alert": "high_psi",
-  "details": {
-    "psi": 0.3111418639933967,
-    "prediction_psi": null,
-    "window": "latest_batch"
-  }
-}

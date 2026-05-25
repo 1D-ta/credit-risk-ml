@@ -1,11 +1,5 @@
 """
 Temporal split validator: enforces no leakage, logs feature statistics.
-
-PURPOSE (Interview):
-- Prevents accidental data leakage (common root cause of overfitting)
-- Validates that train/test splits respect time ordering
-- Logs feature distributions to detect drift across splits
-- Fails loudly if random split is detected (dates not in order)
 """
 
 from pathlib import Path
@@ -96,7 +90,7 @@ def log_split_statistics(
         print(f"  Train: {train_target_rate*100:.2f}% positive ({train_df['target'].sum()} defaults)")
         print(f"  Test: {test_target_rate*100:.2f}% positive ({test_df['target'].sum()} defaults)")
         if abs(train_target_rate - test_target_rate) > 0.05:
-            print(f"  ⚠️  WARNING: Target shift > 5% detected")
+            print("  WARNING: Target shift > 5% detected")
     
     # Feature statistics (numeric columns only)
     print(f"\nFeature Statistics (mean ± std):")

@@ -31,7 +31,7 @@ def main():
     md = generate_business_metrics_report(args.log_file, args.output)
     
     if args.output:
-        print(f"✓ Report saved to {args.output}")
+        print(f"Report saved to {args.output}")
     
     print("\n" + md)
     return 0

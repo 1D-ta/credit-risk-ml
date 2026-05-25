@@ -1,11 +1,5 @@
 """
 Business metrics computation and reporting for credit risk decisions.
-
-PURPOSE (Interview):
-- Translates model predictions to business impact: approval rate, loss estimates
-- Enables stakeholder communication: "X% approved, Y% manual review, Z% rejected"
-- Justifies decision thresholds: shows sensitivity to different thresholds
-- Supports cost-benefit analysis: links model decisions to financial outcomes
 """
 
 import json

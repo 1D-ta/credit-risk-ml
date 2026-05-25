@@ -2,7 +2,7 @@
   "body": {
     "decision": "approve",
     "model_version": "v1",
-    "request_id": "700f9406-80b9-40c4-8528-886782bb27f7",
+    "request_id": "sample-request-id",
     "risk_score": 0.0
   },
   "status_code": 200

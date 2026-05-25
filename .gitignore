@@ -1,49 +1,42 @@
-.DS_Store
+# Python environments and caches
+/.venv/
+venv/
 __pycache__/
-*.pyc
-*.pyo
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .cache/
-.coverage
-htmlcov/
-.venv/
-venv/
-build/
-dist/
-*.ipynb_checkpoints/
-*.log
-logs/
-*.tmp
-*.swp
-*.bak
+*.pyc
+*.pyo
+
+# Local config and editor files
 .env
 .env.*
-.idea/
 .vscode/
+.idea/
+.DS_Store
+.Spotlight-V100
+.Trashes
+*.swp
+*.tmp
+*.bak
 
-# Production runtime artifacts (should never be committed)
-artifacts/logs/
-artifacts/models/*.pkl
-artifacts/models/candidate/
-artifacts/models/approved/
-artifacts/models/**/*.pkl
-artifacts/models/*.joblib
-artifacts/models/**/*.joblib
-artifacts/models/*.h5
-artifacts/models/**/*.h5
-artifacts/models/split_indices.json
-artifacts/feature_stats/inference_samples.jsonl
-!artifacts/models/.gitkeep
-!artifacts/reports/.gitkeep
+# Build and coverage outputs
+build/
+dist/
+.coverage
+htmlcov/
 
-# ML artifacts / caches
+# Logs
+*.log
+logs/
+
+# Model binaries and large ML artifacts
 *.pkl
 *.joblib
 *.h5
 
-# Cloud credentials & secrets (for production deployment)
+# Credentials and secrets
 *.key
 *.pem
 credentials*.json
@@ -54,3 +47,19 @@ config.local.json
 .gcp/
 /secrets/
 /keys/
+
+# Artifacts: keep only a minimal public evidence sample
+/artifacts/*
+!/artifacts/ARTIFACTS.md
+!/artifacts/evidence/
+!/artifacts/evidence/README.md
+!/artifacts/evidence/drift_alert_rollback.log
+!/artifacts/evidence/temporal_training.log
+!/artifacts/evidence/inference_success.json
+!/artifacts/evidence/inference_failure.json
+!/artifacts/models/.gitkeep
+!/artifacts/reports/.gitkeep
+
+# Notebook cache
+.ipynb_checkpoints/
+*.ipynb_checkpoints/

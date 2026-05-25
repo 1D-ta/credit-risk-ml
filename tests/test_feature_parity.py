@@ -1,15 +1,5 @@
 """
 Feature Parity Test: Verify training and inference pipelines produce identical features.
-
-PURPOSE (Interview):
-- Catches training-serving skew early (e.g., different preprocessing, scaling mismatch)
-- Ensures feature consistency across batch and online inference
-- Documents exact transformation logic for production debugging
-- Fails loudly on any discrepancy
-
-FAILURE MODE:
-If features don't match, model predictions diverge. This test ensures that
-the same raw input produces identical transformed features everywhere.
 """
 
 import json
@@ -101,7 +91,7 @@ def test_feature_parity():
     parity_check = np.allclose(X_0_first, X_0_second, rtol=1e-10, atol=1e-15)
     assert parity_check, "FEATURE_PARITY_FAILED: Same input produces different output (preprocessing is non-deterministic)"
     
-    print(f"\n✓ Feature parity check PASSED")
+    print("\nFeature parity check passed")
     print(f"  Same raw input transforms identically across calls")
     print(f"  All features properly imputed and scaled")
     print(f"{'='*80}\n")
@@ -110,13 +100,13 @@ def test_feature_parity():
 if __name__ == "__main__":
     try:
         test_feature_parity()
-        print("✓ All feature parity tests passed")
+        print("All feature parity tests passed")
         sys.exit(0)
     except AssertionError as e:
-        print(f"✗ FEATURE_PARITY_TEST_FAILED: {e}")
+        print(f"FEATURE_PARITY_TEST_FAILED: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"✗ FEATURE_PARITY_TEST_ERROR: {e}")
+        print(f"FEATURE_PARITY_TEST_ERROR: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(2)
